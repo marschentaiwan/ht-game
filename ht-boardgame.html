@@ -186,12 +186,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle
 <!-- LOBBY -->
 <div id="lobby" class="screen">
   <h2 class="page-title" style="margin-bottom:6px;">各組掃碼或點連結加入</h2>
-  <p style="color:var(--dim);font-size:13px;margin-bottom:12px;">手機掃碼前，請確認以下 IP 是你電腦的 Wi-Fi IP</p>
-  <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;background:var(--card);border:1px solid rgba(120,251,182,.2);border-radius:12px;padding:10px 14px;">
-    <span style="font-size:13px;color:var(--dim);white-space:nowrap;">電腦 IP：</span>
-    <input id="hostIP" type="text" placeholder="192.168.x.x" style="flex:1;background:transparent;border:none;outline:none;color:var(--green);font-size:14px;font-family:monospace;font-weight:700;">
-    <button onclick="refreshQR()" style="padding:5px 14px;border-radius:20px;border:1px solid var(--green);background:transparent;color:var(--green);font-size:12px;cursor:pointer;">更新 QR</button>
-  </div>
+  <p style="color:var(--dim);font-size:13px;margin-bottom:22px;">各組用手機掃描下方 QR Code 加入搶答</p>
   <div class="lobby-grid" id="lobbyGrid"></div>
   <div style="background:rgba(120,251,182,.08);border:1px solid rgba(120,251,182,.2);border-radius:12px;padding:14px 18px;max-width:560px;margin-bottom:24px;font-size:13px;line-height:1.7;color:var(--dim);">
     💡 <strong style="color:var(--green)">同一台電腦多分頁：</strong>點「複製連結」在新分頁貼上即可，無需伺服器<br>
@@ -1273,11 +1268,7 @@ function selRound(btn,n) {
 
 // ══ HOST: LOBBY ══
 function getBaseURL() {
-  const ipInput = document.getElementById('hostIP');
-  const ip = ipInput ? ipInput.value.trim() : '';
-  if (ip) {
-    return 'http://' + ip + ':8080/ht-boardgame.html';
-  }
+  // Always use current page URL (works on GitHub Pages, localhost, file://)
   return location.href.split('?')[0].split('#')[0];
 }
 
