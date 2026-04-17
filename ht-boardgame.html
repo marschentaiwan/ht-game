@@ -137,6 +137,17 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle
 .bzmsg.active{color:var(--amber);font-weight:700;}
 .bzmsg.ok{color:var(--green);font-weight:700;}
 
+/* player option buttons */
+.bz-obtn{display:flex;align-items:center;gap:12px;width:100%;background:rgba(20,61,34,.7);border:1px solid rgba(120,251,182,.2);border-radius:14px;padding:14px 16px;margin-bottom:9px;cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-size:14px;line-height:1.5;color:var(--text);text-align:left;transition:all .15s;}
+.bz-obtn:hover:not(:disabled){border-color:rgba(120,251,182,.5);background:rgba(120,251,182,.1);}
+.bz-obtn:active:not(:disabled){transform:scale(.98);}
+.bz-obtn:disabled{opacity:.5;cursor:default;}
+.bz-obtn.correct{border-color:var(--green)!important;background:rgba(120,251,182,.15)!important;}
+.bz-obtn.wrong{border-color:var(--bad)!important;background:rgba(255,107,107,.1)!important;}
+.bz-obtn .bzletter{width:32px;height:32px;border-radius:10px;background:rgba(120,251,182,.15);display:flex;align-items:center;justify-content:center;font-family:'Quicksand',sans-serif;font-weight:700;font-size:15px;color:var(--green);flex-shrink:0;}
+.bz-obtn.correct .bzletter{background:var(--green);color:var(--bg);}
+.bz-obtn.wrong .bzletter{background:var(--bad);color:#fff;}
+
 /* result */
 #result{text-align:center;padding:40px 20px;}
 .trophy{font-size:58px;margin-bottom:12px;animation:bounce 1s ease-in-out infinite alternate;}
@@ -204,7 +215,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle
   </div>
   <div class="timer-wrap">
     <div class="timer-track"><div class="timer-bar" id="timerBar" style="width:100%"></div></div>
-    <div class="tnum"><span id="timerNum">10</span> 秒</div>
+    <div class="tnum"><span id="timerNum">30</span> 秒</div>
   </div>
   <div class="phase-row">
     <span class="ptag" id="phaseTag">Sales</span>
@@ -232,22 +243,32 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle
 </div>
 
 <!-- BUZZER (player) -->
-<div id="buzzer" class="screen">
-  <div class="bz-name" id="bzName" style="color:#78fbb6">A 組</div>
-  <div style="font-size:12px;color:var(--dim);margin-bottom:4px;">目前積分</div>
-  <div class="bz-score" id="bzScore">0</div>
-  <div class="bz-slabel">分</div>
-  <div class="bz-q" id="bzQ">
+<div id="buzzer" class="screen" style="padding:20px 16px;overflow-y:auto;">
+  <div style="display:flex;align-items:center;justify-content:space-between;width:100%;max-width:420px;margin-bottom:14px;">
+    <div class="bz-name" id="bzName" style="color:#78fbb6;font-size:18px;">A 組</div>
+    <div style="text-align:right;">
+      <span class="bz-score" id="bzScore" style="font-size:26px;">0</span>
+      <span style="font-size:11px;color:var(--dim);margin-left:4px;">分</span>
+    </div>
+  </div>
+
+  <div id="bzTimer" style="display:none;width:100%;max-width:420px;margin-bottom:12px;">
+    <div style="background:rgba(255,255,255,.08);border-radius:4px;height:5px;overflow:hidden;">
+      <div class="timer-bar" id="bzTimerBar" style="width:100%;height:100%;background:var(--green);transition:width 1s linear, background .5s;"></div>
+    </div>
+    <div style="font-family:'Quicksand',sans-serif;font-weight:700;font-size:12px;color:var(--dim);text-align:right;margin-top:3px;">
+      <span id="bzTimerNum">30</span> 秒
+    </div>
+  </div>
+
+  <div class="bz-q" id="bzQ" style="display:none;width:100%;max-width:420px;">
     <div class="bz-voice" id="bzVoice"></div>
     <div class="bz-task" id="bzTask"></div>
   </div>
-  <div style="margin:20px 0;">
-    <button class="buzz-btn" id="buzzBtn" onclick="doBuzz()" disabled>
-      <span class="buzz-icon-big">🔔</span>
-      <span>搶答</span>
-    </button>
-  </div>
-  <div class="bzmsg" id="bzMsg">等待遊戲開始…</div>
+
+  <div id="bzOpts" style="display:none;width:100%;max-width:420px;margin-top:10px;"></div>
+
+  <div class="bzmsg" id="bzMsg" style="width:100%;max-width:420px;text-align:center;margin-top:14px;">等待遊戲開始…</div>
 </div>
 
 <!-- RESULT -->
@@ -354,12 +375,12 @@ function initFirebaseHost() {
     const conns = snap.val() || {};
     updateConnStatus(conns);
   });
-  // Listen for buzz events
+  // Listen for buzz events (with answer)
   getRoomRef('buzz').on('value', (snap) => {
     const bz = snap.val();
     if (bz && bz.ts > (window._lastBuzzTs||0)) {
       window._lastBuzzTs = bz.ts;
-      if(!answered && buzzedIdx<0) handleBuzz(bz.idx);
+      if(!answered && buzzedIdx<0) handleBuzz(bz.idx, bz.selectedIdx);
     }
   });
 }
@@ -379,7 +400,7 @@ function send(type, data={}) {}
 const COLORS = ['#78fbb6','#5bc8f5','#f7af43','#ff8fb1'];
 let teams=[], scores=[], totalRounds=8;
 let shuffled=[], currentQ=0;
-let timerInt=null, timeLeft=10;
+let timerInt=null, timeLeft=30;
 let answered=false, buzzedIdx=-1;
 let isHost=false, myIdx=-1, myName='';
 
@@ -1436,8 +1457,9 @@ function updateScores() {
 // ══ HOST: QUESTION ══
 function loadQ() {
   answered=false; buzzedIdx=-1;
-  // Clear old buzz and start polling
   window._lastBuzzTs = 0;
+  // Clear previous buzz in Firebase
+  if(roomId) getRoomRef('buzz').remove();
   const q = shuffled[currentQ];
   document.getElementById('roundNum').textContent = currentQ+1;
 
@@ -1468,14 +1490,14 @@ function loadQ() {
 
 function startTimer() {
   clearInterval(timerInt);
-  timeLeft=10; updateTimer();
+  timeLeft=30; updateTimer();
   timerInt=setInterval(()=>{ timeLeft--; updateTimer(); if(timeLeft<=0){ clearInterval(timerInt); if(!answered) timeUp(); } },1000);
 }
 function updateTimer() {
-  const pct=(timeLeft/10)*100;
+  const pct=(timeLeft/30)*100;
   const bar=document.getElementById('timerBar');
   bar.style.width=pct+'%';
-  bar.className='timer-bar'+(timeLeft<=3?' danger':timeLeft<=5?' warn':'');
+  bar.className='timer-bar'+(timeLeft<=10?' danger':timeLeft<=15?' warn':'');
   document.getElementById('timerNum').textContent=timeLeft;
 }
 
@@ -1490,22 +1512,50 @@ function timeUp() {
   saveState('timeout');
 }
 
-// ── Someone buzzed ──
-function handleBuzz(idx) {
+// ── Someone buzzed with an answer ──
+function handleBuzz(idx, selectedIdx) {
   if(answered||buzzedIdx>=0) return;
   buzzedIdx=idx;
+  answered=true;
   clearInterval(timerInt);
-  answered=false; // still need to answer
 
-  const t=teams[idx];
+  const q = shuffled[currentQ];
+  const t = teams[idx];
+  const correct = (selectedIdx === q.correctIdx);
+
+  if(correct) scores[buzzedIdx] += 2;
+  else scores[buzzedIdx] -= 1;
+  updateScores();
+
+  // Update host UI
   const bb=document.getElementById('buzzBar');
   bb.className='buzz-bar buzzed';
-  document.getElementById('buzzTitle').textContent=`🔔 ${t.name} 搶答！`;
-  document.getElementById('buzzSub').textContent='請選擇答案 ↓';
-  document.getElementById('phaseHint').textContent=`${t.name} 搶到！`;
+  document.getElementById('buzzTitle').textContent = (correct?'✅':'❌') + ' ' + t.name + ' 選了 ' + 'ABCD'[selectedIdx];
+  document.getElementById('buzzSub').textContent = correct ? '答對了 +2 分' : '答錯了 -1 分';
+  document.getElementById('phaseHint').textContent = correct ? t.name+' 答對！' : t.name+' 答錯';
 
+  // Show options with results
   showOpts();
-  saveState('buzzed', {buzzedIdx});
+  document.querySelectorAll('.obtn').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.correctIdx) b.classList.add('correct');
+    else if(i===selectedIdx) b.classList.add('wrong');
+    else b.classList.add('reveal');
+  });
+
+  // Save state with full info
+  saveState(correct?'answered':'buzzed', {buzzedIdx, selectedIdx, correctIdx:q.correctIdx, correct});
+
+  // Show feedback + value picker if correct
+  const hL={human:'❤ Human',simplifying:'⚡ Simplifying',surprising:'✨ Surprising'};
+  const hC={human:'vt-h',simplifying:'vt-s',surprising:'vt-su'};
+
+  if(correct) {
+    showValPicker();
+  } else {
+    showFB(false, '❌ ' + t.name + ' 答錯了',
+      '正確答案是 ' + 'ABCD'[q.correctIdx] + '，體現了 <span class="vtag '+hC[q.htValue]+'">'+hL[q.htValue]+'</span>。<br><br>' + q.explain);
+  }
 }
 
 function showOpts() {
@@ -1516,30 +1566,6 @@ function showOpts() {
     </button>`).join('');
 }
 
-function selectOpt(idx) {
-  if(answered) return;
-  answered=true;
-  const q=shuffled[currentQ];
-  const correct=(idx===q.correctIdx);
-  if(correct&&buzzedIdx>=0){ scores[buzzedIdx]+=2; updateScores(); }
-
-  document.querySelectorAll('.obtn').forEach((b,i)=>{
-    b.disabled=true;
-    if(i===q.correctIdx) b.classList.add('correct');
-    else if(i===idx&&!correct) b.classList.add('wrong');
-    else b.classList.add('reveal');
-  });
-
-  if(correct) {
-    showValPicker();
-  } else {
-    const hL={human:'❤ Human',simplifying:'⚡ Simplifying',surprising:'✨ Surprising'};
-    const hC={human:'vt-h',simplifying:'vt-s',surprising:'vt-su'};
-    showFB(false,'❌ 不是最佳答案',
-      `正確答案是 ${'ABCD'[q.correctIdx]}，體現了 <span class="vtag ${hC[q.htValue]}">${hL[q.htValue]}</span>。<br><br>${q.explain}`);
-  }
-  saveState('answered', {correct, scores:[...scores]});
-}
 
 function revealOpts() {
   const q=shuffled[currentQ];
@@ -1612,6 +1638,7 @@ function saveState(phase, extra={}) {
       icon:  shuffled[currentQ].icon,
       title: shuffled[currentQ].title
     } : null,
+    options: shuffled[currentQ] ? shuffled[currentQ].options.map(o=>({text:o.text})) : null,
     ts: Date.now(),
     ...extra
   };
@@ -1645,41 +1672,108 @@ function initPlayer() {
   show('buzzer');
 }
 
+let bzTimerInt = null, bzLastPhase = '';
+
 function syncFromFirebase(st) {
   try {
     if(st.scores && st.scores[myIdx]!==undefined)
       document.getElementById('bzScore').textContent=st.scores[myIdx];
 
-    const btn=document.getElementById('buzzBtn');
     const msg=document.getElementById('bzMsg');
+    const optsDiv = document.getElementById('bzOpts');
+    const qDiv = document.getElementById('bzQ');
+    const timerDiv = document.getElementById('bzTimer');
 
-    if(st.phase==='start'||st.phase==='question') {
-      btn.disabled=false;
-      msg.textContent='題目已出，快搶答！';
-      msg.className='bzmsg active';
+    if((st.phase==='start'||st.phase==='question') && bzLastPhase !== st.phase+st.q) {
+      bzLastPhase = st.phase+st.q;
+      // New question - render options
       if(st.qData) {
-        document.getElementById('bzQ').style.display='block';
+        qDiv.style.display='block';
         document.getElementById('bzVoice').textContent=st.qData.voice||'';
         document.getElementById('bzTask').textContent=st.qData.task||'';
       }
-    } else if(st.phase==='buzzed') {
-      const buzzedName=st.teams&&st.buzzedIdx>=0?st.teams[st.buzzedIdx].name:'';
-      if(st.buzzedIdx===myIdx) {
-        msg.textContent='🔔 你搶到了！等主持人螢幕選答案';
-        msg.className='bzmsg ok';
+      if(st.options) {
+        optsDiv.style.display='block';
+        optsDiv.innerHTML = st.options.map((o,i)=>
+          '<button class="bz-obtn" onclick="playerSelect('+i+')">' +
+          '<span class="bzletter">'+'ABCD'[i]+'</span>' +
+          '<span>'+o.text+'</span>' +
+          '</button>'
+        ).join('');
+      }
+      timerDiv.style.display='block';
+      msg.textContent='搶答中！點選你的答案';
+      msg.className='bzmsg active';
+
+      // Start client-side timer
+      if(bzTimerInt) clearInterval(bzTimerInt);
+      let t = 30;
+      updateBzTimer(t);
+      bzTimerInt = setInterval(()=>{
+        t--;
+        updateBzTimer(t);
+        if(t<=0) clearInterval(bzTimerInt);
+      }, 1000);
+    } else if(st.phase==='buzzed' || st.phase==='answered') {
+      // Someone already answered - disable all buttons
+      if(bzTimerInt) { clearInterval(bzTimerInt); bzTimerInt=null; }
+      const btns = optsDiv.querySelectorAll('.bz-obtn');
+      btns.forEach((b,i)=>{
+        b.disabled = true;
+        if(st.correctIdx !== undefined && i === st.correctIdx) b.classList.add('correct');
+        else if(st.buzzedIdx >= 0 && st.selectedIdx === i && i !== st.correctIdx) b.classList.add('wrong');
+      });
+      const buzzedName = st.teams && st.buzzedIdx>=0 ? st.teams[st.buzzedIdx].name : '';
+      if(st.buzzedIdx === myIdx) {
+        if(st.correct) {
+          msg.textContent = '✅ 你答對了！+2 分';
+          msg.className='bzmsg ok';
+        } else {
+          msg.textContent = '❌ 答錯了，扣 1 分';
+          msg.className='bzmsg';
+        }
       } else {
-        btn.disabled=true;
-        msg.textContent=(buzzedName||'其他組')+' 搶先了，等下一題！';
+        msg.textContent = (buzzedName||'其他組') + (st.correct?' 答對了':' 答錯了') + '，等下一題！';
         msg.className='bzmsg';
       }
-    } else if(st.phase==='answered'||st.phase==='timeout') {
-      btn.disabled=true;
-      msg.textContent='等待下一題…';
+    } else if(st.phase==='timeout') {
+      if(bzTimerInt) { clearInterval(bzTimerInt); bzTimerInt=null; }
+      const btns = optsDiv.querySelectorAll('.bz-obtn');
+      btns.forEach((b,i)=>{
+        b.disabled = true;
+        if(st.correctIdx !== undefined && i === st.correctIdx) b.classList.add('correct');
+      });
+      msg.textContent = '⏰ 時間到，沒有人答對';
       msg.className='bzmsg';
     } else if(st.phase==='over') {
       showPlayerResult(st);
     }
   } catch(e) { console.error(e); }
+}
+
+function updateBzTimer(t) {
+  const bar = document.getElementById('bzTimerBar');
+  const num = document.getElementById('bzTimerNum');
+  if(!bar || !num) return;
+  bar.style.width = Math.max(0, (t/30)*100) + '%';
+  bar.style.background = t<=10 ? '#ff6b6b' : t<=15 ? '#f7af43' : '#78fbb6';
+  num.textContent = Math.max(0, t);
+}
+
+function playerSelect(idx) {
+  // First player to select locks in their answer
+  if(!roomId) return;
+  const btns = document.querySelectorAll('.bz-obtn');
+  btns.forEach(b => b.disabled = true);
+  // Write to Firebase - server-side logic decides who was first
+  getRoomRef('buzz').set({
+    idx: myIdx,
+    name: myName,
+    selectedIdx: idx,
+    ts: Date.now()
+  });
+  document.getElementById('bzMsg').textContent = '已送出答案，等待結果…';
+  document.getElementById('bzMsg').className = 'bzmsg ok';
 }
 
 function onMsg(e) {
