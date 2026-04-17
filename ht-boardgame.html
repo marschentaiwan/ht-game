@@ -188,10 +188,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle
   <h2 class="page-title" style="margin-bottom:6px;">各組掃碼或點連結加入</h2>
   <p style="color:var(--dim);font-size:13px;margin-bottom:22px;">各組用手機掃描下方 QR Code 加入搶答</p>
   <div class="lobby-grid" id="lobbyGrid"></div>
-  <div style="background:rgba(120,251,182,.08);border:1px solid rgba(120,251,182,.2);border-radius:12px;padding:14px 18px;max-width:560px;margin-bottom:24px;font-size:13px;line-height:1.7;color:var(--dim);">
-    💡 <strong style="color:var(--green)">同一台電腦多分頁：</strong>點「複製連結」在新分頁貼上即可，無需伺服器<br>
-    📱 <strong style="color:var(--green)">手機掃碼：</strong>需先用 <code style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:4px;">python3 -m http.server 8080</code> 啟動伺服器
-  </div>
+
   <button class="btn-primary" onclick="startGame()" style="margin-bottom:12px;">開始遊戲 🎮</button>
   <button class="btn-ghost" onclick="show('setup')">← 返回設定</button>
 </div>
@@ -1358,7 +1355,16 @@ function copyURL(url) {
 
 function pollConn() {
   clearInterval(window._poll);
-  window._poll = setInterval(()=>{
+  // Also listen for storage events (cross-tab on same origin)
+  window.addEventListener('storage', function(e) {
+    if(e.key === 'ht_conn') updateConnStatus();
+  });
+  window._poll = setInterval(updateConnStatus, 500);
+  updateConnStatus();
+}
+
+function updateConnStatus() {
+  try {
     const raw = localStorage.getItem('ht_conn')||'{}';
     const conns = JSON.parse(raw);
     teams.forEach((_,i)=>{
@@ -1368,7 +1374,7 @@ function pollConn() {
       if(conns[i]) { el.textContent='✅ 已連線'; card.classList.add('connected'); }
       else { el.textContent='⏳ 等待連線'; card.classList.remove('connected'); }
     });
-  }, 600);
+  } catch(e) {}
 }
 
 // ══ HOST: START ══
@@ -1590,9 +1596,13 @@ function initPlayer() {
   myIdx=parseInt(params.get('i')||'0');
 
   // Register connection
-  const conns=JSON.parse(localStorage.getItem('ht_conn')||'{}');
-  conns[myIdx]=true;
-  localStorage.setItem('ht_conn',JSON.stringify(conns));
+  try {
+    const conns=JSON.parse(localStorage.getItem('ht_conn')||'{}');
+    conns[myIdx]=true;
+    localStorage.setItem('ht_conn',JSON.stringify(conns));
+    // Trigger storage event for host tab
+    localStorage.setItem('ht_conn_ts', Date.now().toString());
+  } catch(e) {}
 
   document.getElementById('bzName').textContent=myName;
   const col=COLORS[myIdx]||'#78fbb6';
