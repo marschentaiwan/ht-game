@@ -1322,10 +1322,6 @@ function generateLobby() {
     qrBox.className = 'qr-box';
     qrBox.id = 'qr'+i;
 
-    const hintDiv = document.createElement('div');
-    hintDiv.className = 'tab-hint';
-    hintDiv.textContent = '同一台電腦請開新分頁貼上連結';
-
     const copyBtn = document.createElement('button');
     copyBtn.className = 'copy-btn';
     copyBtn.id = 'cb'+i;
@@ -1335,7 +1331,6 @@ function generateLobby() {
     card.appendChild(nameDiv);
     card.appendChild(statusDiv);
     card.appendChild(qrBox);
-    card.appendChild(hintDiv);
     card.appendChild(copyBtn);
 
     // Append to DOM FIRST, then draw QR
@@ -1387,6 +1382,7 @@ function startGame() {
   currentQ = 0;
   buildScores();
   document.getElementById('totalRounds').textContent = shuffled.length;
+  pollBuzz();
   saveState('start');
   show('game');
   loadQ();
@@ -1407,6 +1403,10 @@ function updateScores() {
 // ══ HOST: QUESTION ══
 function loadQ() {
   answered=false; buzzedIdx=-1;
+  // Clear old buzz and start polling
+  localStorage.removeItem('ht_buzz');
+  _lastBuzzTs = 0;
+  if(!window._buzzPoll) pollBuzz();
   const q = shuffled[currentQ];
   document.getElementById('roundNum').textContent = currentQ+1;
 
@@ -1587,6 +1587,23 @@ function saveState(phase, extra={}) {
   localStorage.setItem('ht_state', JSON.stringify(state));
 }
 
+let _lastBuzzTs = 0;
+function pollBuzz() {
+  clearInterval(window._buzzPoll);
+  _lastBuzzTs = 0;
+  window._buzzPoll = setInterval(()=>{
+    try {
+      const raw = localStorage.getItem('ht_buzz');
+      if (!raw) return;
+      const bz = JSON.parse(raw);
+      if (bz.ts > _lastBuzzTs) {
+        _lastBuzzTs = bz.ts;
+        handleBuzz(bz.idx);
+      }
+    } catch(e) {}
+  }, 200);
+}
+
 // ══ PLAYER LOGIC ══
 function initPlayer() {
   isHost=false;
@@ -1600,10 +1617,8 @@ function initPlayer() {
     const conns=JSON.parse(localStorage.getItem('ht_conn')||'{}');
     conns[myIdx]=true;
     localStorage.setItem('ht_conn',JSON.stringify(conns));
-    // Trigger storage event for host tab
     localStorage.setItem('ht_conn_ts', Date.now().toString());
   } catch(e) {}
-
   document.getElementById('bzName').textContent=myName;
   const col=COLORS[myIdx]||'#78fbb6';
   document.getElementById('bzName').style.color=col;
@@ -1618,52 +1633,53 @@ function initPlayer() {
 
 let lastTs=0;
 function syncFromStorage() {
-  const raw=localStorage.getItem('ht_state');
-  if(!raw) return;
-  const st=JSON.parse(raw);
-  if(st.ts===lastTs) return;
-  lastTs=st.ts;
+  try {
+    const raw=localStorage.getItem('ht_state');
+    if(!raw) return;
+    const st=JSON.parse(raw);
+    if(st.ts===lastTs) return;
+    lastTs=st.ts;
 
-  // Update score
-  if(st.scores&&st.scores[myIdx]!==undefined)
-    document.getElementById('bzScore').textContent=st.scores[myIdx];
+    if(st.scores&&st.scores[myIdx]!==undefined)
+      document.getElementById('bzScore').textContent=st.scores[myIdx];
 
-  const btn=document.getElementById('buzzBtn');
-  const msg=document.getElementById('bzMsg');
+    const btn=document.getElementById('buzzBtn');
+    const msg=document.getElementById('bzMsg');
 
-  if(st.phase==='start'||st.phase==='question') {
-    btn.disabled=false;
-    msg.textContent='題目已出，快搶答！';
-    msg.className='bzmsg active';
-    if(st.qData) {
-      document.getElementById('bzQ').style.display='block';
-      document.getElementById('bzVoice').textContent=st.qData.voice||'';
-      document.getElementById('bzTask').textContent=st.qData.task||'';
-    }
-  } else if(st.phase==='buzzed') {
-    if(st.buzzedIdx===myIdx) {
-      msg.textContent='🔔 你搶到了！等主持人螢幕選答案';
-      msg.className='bzmsg ok';
-    } else {
+    if(st.phase==='start'||st.phase==='question') {
+      btn.disabled=false;
+      msg.textContent='題目已出，快搶答！';
+      msg.className='bzmsg active';
+      if(st.qData) {
+        document.getElementById('bzQ').style.display='block';
+        document.getElementById('bzVoice').textContent=st.qData.voice||'';
+        document.getElementById('bzTask').textContent=st.qData.task||'';
+      }
+    } else if(st.phase==='buzzed') {
+      const buzzedName=st.teams&&st.buzzedIdx>=0?st.teams[st.buzzedIdx].name:'';
+      if(st.buzzedIdx===myIdx) {
+        msg.textContent='🔔 你搶到了！等主持人螢幕選答案';
+        msg.className='bzmsg ok';
+      } else {
+        btn.disabled=true;
+        msg.textContent=(buzzedName||'其他組')+' 搶先了，等下一題！';
+        msg.className='bzmsg';
+      }
+    } else if(st.phase==='answered'||st.phase==='timeout') {
       btn.disabled=true;
-      const name=st.teams&&st.teams[st.buzzedIdx]?st.teams[st.buzzedIdx].name:'其他組';
-      msg.textContent=`${name} 搶先了，等下一題！`;
+      msg.textContent='等待下一題…';
       msg.className='bzmsg';
+    } else if(st.phase==='over') {
+      clearInterval(window._playerPoll);
+      showPlayerResult(st);
     }
-  } else if(st.phase==='answered'||st.phase==='timeout') {
-    btn.disabled=true;
-    msg.textContent='等待下一題…';
-    msg.className='bzmsg';
-  } else if(st.phase==='over') {
-    clearInterval(window._playerPoll);
-    showPlayerResult(st);
-  }
+  } catch(e) {}
 }
 
 function onMsg(e) {
-  // BroadcastChannel: host receives BUZZ from player tabs
-  if(isHost && e.data.type==='BUZZ') {
-    handleBuzz(e.data.idx);
+  if(isHost) {
+    if(e.data.type==='BUZZ') { handleBuzz(e.data.idx); }
+    if(e.data.type==='CONNECTED') { updateConnStatus(); }
   }
 }
 
@@ -1672,7 +1688,11 @@ function doBuzz() {
   btn.disabled=true;
   document.getElementById('bzMsg').textContent='已按下搶答！';
   document.getElementById('bzMsg').className='bzmsg ok';
-  send('BUZZ',{idx:myIdx, name:myName});
+  // Write buzz to localStorage (works cross-device via GitHub Pages shared origin)
+  const buzzData = {idx:myIdx, name:myName, ts:Date.now()};
+  localStorage.setItem('ht_buzz', JSON.stringify(buzzData));
+  // Also try BroadcastChannel (same browser tabs)
+  send('BUZZ', buzzData);
 }
 
 function showPlayerResult(st) {
