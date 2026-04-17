@@ -1347,7 +1347,7 @@ function generateLobby() {
 
   teams.forEach((t,i)=>{
     // Use hash-based URL so it works on file://
-    const url = base + '?t=' + encodeURIComponent(t.name) + '&i=' + i;
+    const url = base + '?t=' + encodeURIComponent(t.name) + '&i=' + i + '&r=' + roomId;
 
     const card = document.createElement('div');
     card.className = 'lcard';
