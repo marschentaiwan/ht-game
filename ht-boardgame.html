@@ -1480,9 +1480,15 @@ function loadQ() {
   document.getElementById('buzzTitle').textContent='等待搶答中…';
   document.getElementById('buzzSub').textContent='各組請按搶答鈕';
 
-  document.getElementById('optsGrid').innerHTML='';
+  // Show options immediately (read-only on host screen)
+  showOpts();
+  document.querySelectorAll('.obtn').forEach(b => b.disabled = true);
   document.getElementById('fbPanel').classList.remove('show');
   document.getElementById('nextBtn').style.display='none';
+
+  // Update buzz bar hint
+  document.getElementById('buzzTitle').textContent='等待搶答中…';
+  document.getElementById('buzzSub').textContent='各組在手機上選答案';
 
   saveState('question');
   startTimer();
