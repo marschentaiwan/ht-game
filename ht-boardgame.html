@@ -148,6 +148,9 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle
 .httip{background:rgba(120,251,182,.07);border:1px solid rgba(120,251,182,.2);border-radius:13px;padding:16px 20px;max-width:460px;margin-bottom:32px;font-size:13px;line-height:1.7;color:var(--dim);}
 .httip strong{color:var(--green);}
 </style>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -323,18 +326,54 @@ function makeQR(text, container) {
   }
 }
 
-// ══ BROADCAST CHANNEL ══
-const CH = 'ht-buzz';
-let bc = null;
-function initBC() {
-  if (bc) try { bc.close(); } catch(e) {}
-  bc = new BroadcastChannel(CH);
-  bc.onmessage = onMsg;
+// ══ FIREBASE SETUP ══
+const firebaseConfig = {
+  apiKey: "AIzaSyAHhXBouBO2c9Mtf4nt9uR9ZjW9svwjHM4",
+  authDomain: "htgame-6d38e.firebaseapp.com",
+  databaseURL: "https://htgame-6d38e-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "htgame-6d38e",
+  storageBucket: "htgame-6d38e.firebasestorage.app",
+  messagingSenderId: "445600432977",
+  appId: "1:445600432977:web:e63c2e7b14f43074828970"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// Each game session uses a unique room ID (stored in URL hash or generated)
+let roomId = '';
+
+function getRoomRef(path) {
+  return db.ref('rooms/' + roomId + '/' + path);
 }
 
-function send(type, data={}) {
-  if (bc) bc.postMessage({type, ...data});
+function initFirebaseHost() {
+  // Host generates a room ID
+  roomId = 'r' + Date.now().toString(36);
+  // Listen for connections
+  getRoomRef('conn').on('value', (snap) => {
+    const conns = snap.val() || {};
+    updateConnStatus(conns);
+  });
+  // Listen for buzz events
+  getRoomRef('buzz').on('value', (snap) => {
+    const bz = snap.val();
+    if (bz && bz.ts > (window._lastBuzzTs||0)) {
+      window._lastBuzzTs = bz.ts;
+      if(!answered && buzzedIdx<0) handleBuzz(bz.idx);
+    }
+  });
 }
+
+function initFirebasePlayer() {
+  // Listen for game state updates
+  getRoomRef('state').on('value', (snap) => {
+    const st = snap.val();
+    if (st) syncFromFirebase(st);
+  });
+}
+
+// Dummy send function (no-op, kept for compatibility)
+function send(type, data={}) {}
 
 // ══ STATE ══
 const COLORS = ['#78fbb6','#5bc8f5','#f7af43','#ff8fb1'];
@@ -1274,7 +1313,7 @@ function refreshQR() {
   const grid = document.getElementById('lobbyGrid');
   const base = getBaseURL();
   teams.forEach((t,i)=>{
-    const url = base + '?t=' + encodeURIComponent(t.name) + '&i=' + i;
+    const url = base + '?t=' + encodeURIComponent(t.name) + '&i=' + i + '&r=' + roomId;
     const qrBox = document.getElementById('qr'+i);
     const copyBtn = document.getElementById('cb'+i);
     if(qrBox){ qrBox.innerHTML=''; makeQR(url, qrBox); }
@@ -1291,9 +1330,15 @@ function generateLobby() {
   if(teams.length<2){ alert('請至少輸入兩組名稱！'); return; }
   scores = teams.map(()=>0);
 
-  // Save config
-  localStorage.setItem('ht_cfg', JSON.stringify({teams, scores}));
-  localStorage.removeItem('ht_buzz');
+  // Initialize Firebase host
+  initFirebaseHost();
+
+  // Write initial game config to Firebase
+  getRoomRef('config').set({ teams, scores, created: Date.now() });
+  // Clear old state
+  getRoomRef('state').remove();
+  getRoomRef('buzz').remove();
+  getRoomRef('conn').remove();
 
   const grid = document.getElementById('lobbyGrid');
   grid.innerHTML = '';
@@ -1348,28 +1393,17 @@ function copyURL(url) {
   });
 }
 
-function pollConn() {
-  clearInterval(window._poll);
-  // Also listen for storage events (cross-tab on same origin)
-  window.addEventListener('storage', function(e) {
-    if(e.key === 'ht_conn') updateConnStatus();
-  });
-  window._poll = setInterval(updateConnStatus, 500);
-  updateConnStatus();
-}
+function pollConn() { /* Firebase handles this automatically */ }
 
-function updateConnStatus() {
-  try {
-    const raw = localStorage.getItem('ht_conn')||'{}';
-    const conns = JSON.parse(raw);
-    teams.forEach((_,i)=>{
-      const el = document.getElementById('ls'+i);
-      const card = document.getElementById('lc'+i);
-      if(!el) return;
-      if(conns[i]) { el.textContent='✅ 已連線'; card.classList.add('connected'); }
-      else { el.textContent='⏳ 等待連線'; card.classList.remove('connected'); }
-    });
-  } catch(e) {}
+function updateConnStatus(conns) {
+  conns = conns || {};
+  teams.forEach((_,i)=>{
+    const el = document.getElementById('ls'+i);
+    const card = document.getElementById('lc'+i);
+    if(!el) return;
+    if(conns[i]) { el.textContent='✅ 已連線'; card.classList.add('connected'); }
+    else { el.textContent='⏳ 等待連線'; card.classList.remove('connected'); }
+  });
 }
 
 // ══ HOST: START ══
@@ -1382,7 +1416,6 @@ function startGame() {
   currentQ = 0;
   buildScores();
   document.getElementById('totalRounds').textContent = shuffled.length;
-  pollBuzz();
   saveState('start');
   show('game');
   loadQ();
@@ -1404,9 +1437,7 @@ function updateScores() {
 function loadQ() {
   answered=false; buzzedIdx=-1;
   // Clear old buzz and start polling
-  localStorage.removeItem('ht_buzz');
-  _lastBuzzTs = 0;
-  if(!window._buzzPoll) pollBuzz();
+  window._lastBuzzTs = 0;
   const q = shuffled[currentQ];
   document.getElementById('roundNum').textContent = currentQ+1;
 
@@ -1584,63 +1615,39 @@ function saveState(phase, extra={}) {
     ts: Date.now(),
     ...extra
   };
-  localStorage.setItem('ht_state', JSON.stringify(state));
+  if(roomId) getRoomRef('state').set(state);
 }
 
-let _lastBuzzTs = 0;
-function pollBuzz() {
-  clearInterval(window._buzzPoll);
-  _lastBuzzTs = 0;
-  window._buzzPoll = setInterval(()=>{
-    try {
-      const raw = localStorage.getItem('ht_buzz');
-      if (!raw) return;
-      const bz = JSON.parse(raw);
-      if (bz.ts > _lastBuzzTs) {
-        _lastBuzzTs = bz.ts;
-        handleBuzz(bz.idx);
-      }
-    } catch(e) {}
-  }, 200);
-}
 
 // ══ PLAYER LOGIC ══
 function initPlayer() {
   isHost=false;
-  // Support both ?t=name&i=idx and hash-based
   const params=new URLSearchParams(location.search);
   myName=params.get('t')||'?';
   myIdx=parseInt(params.get('i')||'0');
+  roomId=params.get('r')||'';
 
-  // Register connection
-  try {
-    const conns=JSON.parse(localStorage.getItem('ht_conn')||'{}');
-    conns[myIdx]=true;
-    localStorage.setItem('ht_conn',JSON.stringify(conns));
-    localStorage.setItem('ht_conn_ts', Date.now().toString());
-  } catch(e) {}
+  if(!roomId) {
+    document.getElementById('bzMsg').textContent='⚠️ 連線錯誤：無房間 ID';
+    return;
+  }
+
+  // Register connection in Firebase
+  getRoomRef('conn/' + myIdx).set(true);
+  // Auto-remove connection when tab closes
+  getRoomRef('conn/' + myIdx).onDisconnect().remove();
+
   document.getElementById('bzName').textContent=myName;
   const col=COLORS[myIdx]||'#78fbb6';
   document.getElementById('bzName').style.color=col;
 
-  initBC();
+  initFirebasePlayer();
   show('buzzer');
-  syncFromStorage();
-
-  // Poll storage for state changes (cross-tab on same machine)
-  window._playerPoll = setInterval(syncFromStorage, 400);
 }
 
-let lastTs=0;
-function syncFromStorage() {
+function syncFromFirebase(st) {
   try {
-    const raw=localStorage.getItem('ht_state');
-    if(!raw) return;
-    const st=JSON.parse(raw);
-    if(st.ts===lastTs) return;
-    lastTs=st.ts;
-
-    if(st.scores&&st.scores[myIdx]!==undefined)
+    if(st.scores && st.scores[myIdx]!==undefined)
       document.getElementById('bzScore').textContent=st.scores[myIdx];
 
     const btn=document.getElementById('buzzBtn');
@@ -1670,10 +1677,9 @@ function syncFromStorage() {
       msg.textContent='等待下一題…';
       msg.className='bzmsg';
     } else if(st.phase==='over') {
-      clearInterval(window._playerPoll);
       showPlayerResult(st);
     }
-  } catch(e) {}
+  } catch(e) { console.error(e); }
 }
 
 function onMsg(e) {
@@ -1688,11 +1694,10 @@ function doBuzz() {
   btn.disabled=true;
   document.getElementById('bzMsg').textContent='已按下搶答！';
   document.getElementById('bzMsg').className='bzmsg ok';
-  // Write buzz to localStorage (works cross-device via GitHub Pages shared origin)
-  const buzzData = {idx:myIdx, name:myName, ts:Date.now()};
-  localStorage.setItem('ht_buzz', JSON.stringify(buzzData));
-  // Also try BroadcastChannel (same browser tabs)
-  send('BUZZ', buzzData);
+  // Write buzz to Firebase
+  if(roomId) {
+    getRoomRef('buzz').set({idx:myIdx, name:myName, ts:Date.now()});
+  }
 }
 
 function showPlayerResult(st) {
@@ -1715,9 +1720,6 @@ function showPlayerResult(st) {
     initPlayer();
   } else {
     isHost=true;
-    initBC();
-    localStorage.removeItem('ht_conn');
-    localStorage.removeItem('ht_state');
     show('intro');
   }
 })();
