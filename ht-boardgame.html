@@ -212,7 +212,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle
   </div>
   <div class="timer-wrap">
     <div class="timer-track"><div class="timer-bar" id="timerBar" style="width:100%"></div></div>
-    <div class="tnum"><span id="timerNum">30</span> 秒</div>
+    <div class="tnum"><span id="timerNum">20</span> 秒</div>
   </div>
   <div class="phase-row">
     <span class="ptag" id="phaseTag">Sales</span>
@@ -397,8 +397,9 @@ function send(type, data={}) {}
 const COLORS = ['#78fbb6','#5bc8f5','#f7af43','#ff8fb1','#c4a7ff','#ffd54f'];
 let teams=[], scores=[], totalRounds=20;
 let shuffled=[], currentQ=0;
-let timerInt=null, timeLeft=30;
+let timerInt=null, timeLeft=20;
 let answered=false, buzzedIdx=-1;
+let stage2Active=false, stage2Answered=false, stage2BuzzedIdx=-1, stage2TimerInt=null, stage2TimeLeft=10;
 let isHost=false, myIdx=-1, myName='';
 
 // ══ QUESTIONS ══
@@ -1450,9 +1451,16 @@ function updateScores() {
 // ══ HOST: QUESTION ══
 function loadQ() {
   answered=false; buzzedIdx=-1;
+  stage2Active=false; stage2Answered=false; stage2BuzzedIdx=-1;
   window._lastBuzzTs = 0;
+  window._lastStage2Ts = 0;
+  if(stage2TimerInt) clearInterval(stage2TimerInt);
   // Clear previous buzz in Firebase
-  if(roomId) getRoomRef('buzz').remove();
+  if(roomId) {
+    getRoomRef('buzz').remove();
+    getRoomRef('stage2').remove();
+    getRoomRef('stage2buzz').remove();
+  }
   const q = shuffled[currentQ];
   document.getElementById('roundNum').textContent = currentQ+1;
 
@@ -1489,14 +1497,14 @@ function loadQ() {
 
 function startTimer() {
   clearInterval(timerInt);
-  timeLeft=30; updateTimer();
+  timeLeft=20; updateTimer();
   timerInt=setInterval(()=>{ timeLeft--; updateTimer(); if(timeLeft<=0){ clearInterval(timerInt); if(!answered) timeUp(); } },1000);
 }
 function updateTimer() {
-  const pct=(timeLeft/30)*100;
+  const pct=(timeLeft/20)*100;
   const bar=document.getElementById('timerBar');
   bar.style.width=pct+'%';
-  bar.className='timer-bar'+(timeLeft<=10?' danger':timeLeft<=15?' warn':'');
+  bar.className='timer-bar'+(timeLeft<=7?' danger':timeLeft<=10?' warn':'');
   document.getElementById('timerNum').textContent=timeLeft;
 }
 
@@ -1573,28 +1581,142 @@ function revealOpts() {
 }
 
 function showValPicker() {
+  // Stage 2: all teams buzz again to pick HT value
+  // 10s timer, first team to select value gets scored
+  stage2Active = true;
+  stage2Answered = false;
+  stage2BuzzedIdx = -1;
+
   const fp=document.getElementById('fbPanel'); fp.classList.add('show');
   document.getElementById('fbResult').className='fbr win';
-  document.getElementById('fbResult').innerHTML='✅ 答對了！+2 分　🎯 加碼：這題體現哪個 HT 價值觀？';
+  document.getElementById('fbResult').innerHTML='🎯 第二段：這題體現哪個 HT 價值觀？（所有組搶答，10 秒）';
   document.getElementById('fbExplain').innerHTML=`
-    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
-      <button class="vpbtn" onclick="pickVal('human')" style="background:rgba(120,251,182,.15);border:1px solid #78fbb6;color:#78fbb6;">❤ Human</button>
-      <button class="vpbtn" onclick="pickVal('simplifying')" style="background:rgba(91,200,245,.15);border:1px solid #5bc8f5;color:#5bc8f5;">⚡ Simplifying</button>
-      <button class="vpbtn" onclick="pickVal('surprising')" style="background:rgba(247,175,67,.15);border:1px solid #f7af43;color:#f7af43;">✨ Surprising</button>
-    </div><div style="font-size:11px;color:var(--dim);margin-top:6px;">答對再得 +1 分！</div>`;
+    <div id="stage2Status" style="font-size:12px;color:var(--dim);margin-bottom:8px;">等待搶答…</div>
+    <div id="stage2Timer" style="margin-bottom:10px;">
+      <div style="background:rgba(255,255,255,.08);border-radius:4px;height:4px;overflow:hidden;">
+        <div id="stage2Bar" style="width:100%;height:100%;background:var(--green);transition:width 1s linear;"></div>
+      </div>
+      <div style="font-family:'Quicksand',sans-serif;font-weight:700;font-size:12px;color:var(--dim);text-align:right;margin-top:3px;">
+        <span id="stage2Num">10</span> 秒
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--dim);">答對 +2 分／答錯 -1 分</div>`;
+  document.getElementById('nextBtn').style.display='none';
+
+  // Trigger stage 2 broadcast to all player devices
+  if(roomId) {
+    getRoomRef('buzz').remove();
+    getRoomRef('stage2').set({
+      active: true,
+      ts: Date.now(),
+      q: currentQ
+    });
+  }
+
+  // Listen for stage 2 buzz
+  if(roomId) {
+    getRoomRef('stage2buzz').off();
+    getRoomRef('stage2buzz').on('value', (snap)=>{
+      const bz = snap.val();
+      if(bz && bz.ts > (window._lastStage2Ts||0)) {
+        window._lastStage2Ts = bz.ts;
+        if(!stage2Answered) handleStage2Buzz(bz.idx, bz.value);
+      }
+    });
+  }
+
+  // Start 10s timer
+  if(stage2TimerInt) clearInterval(stage2TimerInt);
+  stage2TimeLeft = 10;
+  updateStage2Timer();
+  stage2TimerInt = setInterval(()=>{
+    stage2TimeLeft--;
+    updateStage2Timer();
+    if(stage2TimeLeft<=0) {
+      clearInterval(stage2TimerInt);
+      if(!stage2Answered) stage2TimeUp();
+    }
+  }, 1000);
 }
 
-function pickVal(val) {
-  const q=shuffled[currentQ];
+function updateStage2Timer() {
+  const bar = document.getElementById('stage2Bar');
+  const num = document.getElementById('stage2Num');
+  if(!bar || !num) return;
+  const pct = Math.max(0, (stage2TimeLeft/10)*100);
+  bar.style.width = pct + '%';
+  bar.style.background = stage2TimeLeft<=3 ? '#ff6b6b' : stage2TimeLeft<=5 ? '#f7af43' : '#78fbb6';
+  num.textContent = Math.max(0, stage2TimeLeft);
+}
+
+function handleStage2Buzz(idx, value) {
+  if(stage2Answered) return;
+  stage2Answered = true;
+  stage2BuzzedIdx = idx;
+  clearInterval(stage2TimerInt);
+
+  const q = shuffled[currentQ];
+  const t = teams[idx];
+  const correct = (value === q.htValue);
+
+  if(correct) scores[idx] += 2;
+  else scores[idx] -= 1;
+  updateScores();
+
   const hL={human:'❤ Human',simplifying:'⚡ Simplifying',surprising:'✨ Surprising'};
   const hC={human:'vt-h',simplifying:'vt-s',surprising:'vt-su'};
-  const ok=(val===q.htValue);
-  if(ok&&buzzedIdx>=0){ scores[buzzedIdx]+=1; updateScores(); }
-  document.getElementById('fbResult').className='fbr '+(ok?'win':'lose');
-  document.getElementById('fbResult').innerHTML=ok?'✅ 再得 +1 分！共 +3 分 🎉':`❌ 是 <span class="vtag ${hC[q.htValue]}">${hL[q.htValue]}</span>`;
-  document.getElementById('fbExplain').innerHTML=`<span class="vtag ${hC[q.htValue]}">${hL[q.htValue]}</span><br><br>${q.explain}`;
+
+  // Update UI
+  const status = document.getElementById('stage2Status');
+  if(status) {
+    status.innerHTML = (correct?'✅ ':'❌ ') + t.name + ' 選了 ' +
+      '<span class="vtag '+hC[value]+'">'+hL[value]+'</span>' +
+      ' — ' + (correct?'答對 +2 分':'答錯 -1 分');
+  }
+
+  // Update full feedback
+  document.getElementById('fbResult').innerHTML = (correct?'✅':'❌') + ' ' + t.name + (correct?' 答對了！+2 分':' 答錯了，-1 分');
+  document.getElementById('fbResult').className = 'fbr ' + (correct?'win':'lose');
+  document.getElementById('fbExplain').innerHTML = '正確答案：<span class="vtag '+hC[q.htValue]+'">'+hL[q.htValue]+'</span><br><br>' + q.explain;
+
+  // Broadcast result to players
+  if(roomId) {
+    getRoomRef('stage2').set({
+      active: false,
+      buzzedIdx: idx,
+      value: value,
+      correct: correct,
+      correctValue: q.htValue,
+      scores: [...scores],
+      ts: Date.now()
+    });
+  }
+
   document.getElementById('nextBtn').style.display='block';
-  saveState('answered', {correct:true, scores:[...scores]});
+  stage2Active = false;
+}
+
+function stage2TimeUp() {
+  stage2Answered = true;
+  const q = shuffled[currentQ];
+  const hL={human:'❤ Human',simplifying:'⚡ Simplifying',surprising:'✨ Surprising'};
+  const hC={human:'vt-h',simplifying:'vt-s',surprising:'vt-su'};
+
+  document.getElementById('fbResult').innerHTML = '⏰ 時間到！無人搶答';
+  document.getElementById('fbResult').className = 'fbr lose';
+  document.getElementById('fbExplain').innerHTML = '正確答案：<span class="vtag '+hC[q.htValue]+'">'+hL[q.htValue]+'</span><br><br>' + q.explain;
+
+  if(roomId) {
+    getRoomRef('stage2').set({
+      active: false,
+      timeout: true,
+      correctValue: q.htValue,
+      ts: Date.now()
+    });
+  }
+
+  document.getElementById('nextBtn').style.display='block';
+  stage2Active = false;
 }
 
 function showFB(win,result,explain) {
@@ -1678,6 +1800,17 @@ function syncFromFirebase(st) {
     if(st.scores && st.scores[myIdx]!==undefined)
       document.getElementById('bzScore').textContent=st.scores[myIdx];
 
+    // Listen for stage 2 separately
+    if(roomId && !window._stage2Listener) {
+      window._stage2Listener = true;
+      getRoomRef('stage2').on('value', (snap) => {
+        const s2 = snap.val();
+        if(!s2) return;
+        if(s2.active) showPlayerStage2();
+        else showPlayerStage2Result(s2);
+      });
+    }
+
     const msg=document.getElementById('bzMsg');
     const optsDiv = document.getElementById('bzOpts');
     const qDiv = document.getElementById('bzQ');
@@ -1706,7 +1839,7 @@ function syncFromFirebase(st) {
 
       // Start client-side timer
       if(bzTimerInt) clearInterval(bzTimerInt);
-      let t = 30;
+      let t = 20;
       updateBzTimer(t);
       bzTimerInt = setInterval(()=>{
         t--;
@@ -1754,17 +1887,15 @@ function updateBzTimer(t) {
   const bar = document.getElementById('bzTimerBar');
   const num = document.getElementById('bzTimerNum');
   if(!bar || !num) return;
-  bar.style.width = Math.max(0, (t/30)*100) + '%';
-  bar.style.background = t<=10 ? '#ff6b6b' : t<=15 ? '#f7af43' : '#78fbb6';
+  bar.style.width = Math.max(0, (t/20)*100) + '%';
+  bar.style.background = t<=7 ? '#ff6b6b' : t<=10 ? '#f7af43' : '#78fbb6';
   num.textContent = Math.max(0, t);
 }
 
 function playerSelect(idx) {
-  // First player to select locks in their answer
   if(!roomId) return;
   const btns = document.querySelectorAll('.bz-obtn');
   btns.forEach(b => b.disabled = true);
-  // Write to Firebase - server-side logic decides who was first
   getRoomRef('buzz').set({
     idx: myIdx,
     name: myName,
@@ -1773,6 +1904,92 @@ function playerSelect(idx) {
   });
   document.getElementById('bzMsg').textContent = '已送出答案，等待結果…';
   document.getElementById('bzMsg').className = 'bzmsg ok';
+}
+
+let _playerStage2Timer = null;
+
+function showPlayerStage2() {
+  const optsDiv = document.getElementById('bzOpts');
+  const msg = document.getElementById('bzMsg');
+  // Replace options with HT value buttons
+  optsDiv.innerHTML = `
+    <div style="font-size:13px;color:var(--amber);margin-bottom:10px;text-align:center;font-weight:700;">
+      🎯 第二段：這題體現哪個 HT 價值觀？
+    </div>
+    <div style="background:rgba(255,255,255,.08);border-radius:4px;height:4px;overflow:hidden;margin-bottom:4px;">
+      <div id="pS2Bar" style="width:100%;height:100%;background:var(--amber);transition:width 1s linear;"></div>
+    </div>
+    <div style="font-family:'Quicksand',sans-serif;font-weight:700;font-size:11px;color:var(--dim);text-align:right;margin-bottom:10px;">
+      <span id="pS2Num">10</span> 秒
+    </div>
+    <button class="bz-obtn" onclick="playerPickVal('human')" style="border-color:rgba(120,251,182,.4);">
+      <span class="bzletter" style="background:rgba(120,251,182,.2);color:#78fbb6;">❤</span>
+      <span><strong>Human</strong><br><span style="font-size:12px;color:var(--dim);">像老朋友一樣</span></span>
+    </button>
+    <button class="bz-obtn" onclick="playerPickVal('simplifying')" style="border-color:rgba(91,200,245,.4);">
+      <span class="bzletter" style="background:rgba(91,200,245,.2);color:#5bc8f5;">⚡</span>
+      <span><strong>Simplifying</strong><br><span style="font-size:12px;color:var(--dim);">省時省心</span></span>
+    </button>
+    <button class="bz-obtn" onclick="playerPickVal('surprising')" style="border-color:rgba(247,175,67,.4);">
+      <span class="bzletter" style="background:rgba(247,175,67,.2);color:#f7af43;">✨</span>
+      <span><strong>Surprising</strong><br><span style="font-size:12px;color:var(--dim);">超越期待</span></span>
+    </button>
+    <div style="font-size:11px;color:var(--dim);text-align:center;margin-top:6px;">答對 +2 分／答錯 -1 分</div>`;
+  msg.textContent = '所有組可搶答！點選你認為的答案';
+  msg.className = 'bzmsg active';
+
+  // Start player-side 10s timer
+  if(_playerStage2Timer) clearInterval(_playerStage2Timer);
+  let t = 10;
+  const upd = () => {
+    const bar = document.getElementById('pS2Bar');
+    const num = document.getElementById('pS2Num');
+    if(!bar || !num) return;
+    bar.style.width = Math.max(0, (t/10)*100) + '%';
+    bar.style.background = t<=3 ? '#ff6b6b' : t<=5 ? '#f7af43' : '#78fbb6';
+    num.textContent = Math.max(0, t);
+  };
+  upd();
+  _playerStage2Timer = setInterval(()=>{ t--; upd(); if(t<=0) clearInterval(_playerStage2Timer); }, 1000);
+}
+
+function playerPickVal(value) {
+  if(!roomId) return;
+  // Disable all value buttons
+  document.querySelectorAll('.bz-obtn').forEach(b => b.disabled = true);
+  if(_playerStage2Timer) clearInterval(_playerStage2Timer);
+  getRoomRef('stage2buzz').set({
+    idx: myIdx,
+    name: myName,
+    value: value,
+    ts: Date.now()
+  });
+  document.getElementById('bzMsg').textContent = '已送出，等待結果…';
+  document.getElementById('bzMsg').className = 'bzmsg ok';
+}
+
+function showPlayerStage2Result(s2) {
+  if(_playerStage2Timer) clearInterval(_playerStage2Timer);
+  const msg = document.getElementById('bzMsg');
+  const optsDiv = document.getElementById('bzOpts');
+  document.querySelectorAll('.bz-obtn').forEach(b => b.disabled = true);
+
+  const hL={human:'❤ Human',simplifying:'⚡ Simplifying',surprising:'✨ Surprising'};
+
+  if(s2.timeout) {
+    msg.textContent = '⏰ 時間到，正確是 ' + hL[s2.correctValue];
+    msg.className = 'bzmsg';
+  } else if(s2.buzzedIdx === myIdx) {
+    msg.textContent = s2.correct ? '✅ 你答對了！+2 分' : '❌ 答錯了，-1 分';
+    msg.className = s2.correct ? 'bzmsg ok' : 'bzmsg';
+  } else {
+    msg.textContent = '結束！正確是 ' + hL[s2.correctValue];
+    msg.className = 'bzmsg';
+  }
+  // Update score
+  if(s2.scores && s2.scores[myIdx]!==undefined) {
+    document.getElementById('bzScore').textContent = s2.scores[myIdx];
+  }
 }
 
 function onMsg(e) {
