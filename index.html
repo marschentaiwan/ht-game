@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-TW"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Human Touch Next Level · 據點協作挑戰 | SKODA</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Inter:wght@300;400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root{--g:#78FAAE;--dk:#0E3A2F;--deep:#042B1F;--ink:#0A1F18;--paper:#F4F8F5;--accent:#E8B14F;--soft:rgba(120,250,174,.15);--bad:#D9534F}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{font-family:'Inter','Noto Serif TC',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 20% 10%,rgba(120,250,174,.18),transparent 40%),radial-gradient(circle at 80% 90%,rgba(232,177,79,.08),transparent 40%)}
+#app{position:relative;z-index:2;min-height:100vh}
+.fade{animation:fu .5s ease}@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1}}
+.serif{font-family:'Noto Serif TC',serif}.bebas{font-family:'Bebas Neue',sans-serif;letter-spacing:.2em}
+.eyebrow{font-family:'Bebas Neue',sans-serif;letter-spacing:.3em;font-size:13px;color:var(--dk)}
+.split{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr}
+.left{background:var(--deep);color:#fff;padding:48px 60px;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.left::before{content:'';position:absolute;top:-20%;right:-30%;width:80%;height:80%;background:radial-gradient(circle,rgba(120,250,174,.15),transparent 70%)}
+.logo{width:clamp(200px,24vw,320px);position:relative}
+.hero{font-family:'Noto Serif TC',serif;font-weight:900;font-size:clamp(38px,4.6vw,70px);line-height:1.05;margin:clamp(60px,10vw,150px) 0 20px}
+.hero .l2{display:block;color:var(--g)}
+.sub{font-size:17px;line-height:1.8;color:rgba(244,248,245,.8);max-width:540px;font-weight:300}
+.road{display:flex;margin-top:auto;padding-top:30px;border-top:1px solid rgba(120,250,174,.2)}
+.road div{flex:1;padding-right:10px}.road .n{font-family:'Bebas Neue';font-size:42px;color:var(--g);line-height:1}.road .t{font-size:12px;letter-spacing:.18em;color:rgba(244,248,245,.6)}
+.right{padding:56px 60px;display:flex;flex-direction:column;justify-content:center;position:relative}
+.right::before{content:'';position:absolute;top:56px;left:60px;width:60px;height:4px;background:var(--deep)}
+.ftitle{font-family:'Noto Serif TC',serif;font-weight:700;font-size:30px;margin:12px 0 8px}
+.hint{color:rgba(10,31,24,.6);font-size:14px;margin-bottom:28px;line-height:1.6}
+.field{margin-bottom:22px}.field label{display:block;font-size:11px;letter-spacing:.2em;color:rgba(10,31,24,.55);margin-bottom:6px;font-weight:600}
+.field input,.field select{width:100%;border:none;border-bottom:1.5px solid rgba(10,31,24,.2);padding:11px 0;font-size:17px;background:transparent;font-family:inherit;outline:none;color:var(--ink)}
+.field input:focus,.field select:focus{border-bottom-color:var(--deep)}
+.btn{background:var(--deep);color:var(--g);border:none;padding:17px 34px;font-size:15px;letter-spacing:.22em;font-family:'Bebas Neue','Noto Serif TC',sans-serif;cursor:pointer;position:relative;overflow:hidden;width:100%;margin-top:8px}
+.btn::before{content:'';position:absolute;inset:0;left:-100%;background:var(--g);transition:left .35s}
+.btn span{position:relative;transition:color .35s}.btn:hover::before{left:0}.btn:hover span{color:var(--deep)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--deep);border:1.5px solid var(--deep)}
+.btn.gold{background:var(--accent);color:var(--deep)}
+.btn.sm{width:auto;padding:10px 18px;font-size:13px}
+.menu{display:grid;gap:14px}
+.menu .card{cursor:pointer;transition:.2s}.menu .card:hover{transform:translateX(6px);border-left-color:var(--accent)}
+.card{background:#fff;padding:24px 28px;border:1px solid rgba(10,31,24,.06);box-shadow:0 2px 24px rgba(10,31,24,.05);border-left:4px solid var(--g)}
+.card h3{font-family:'Noto Serif TC',serif;font-size:20px;margin:6px 0 4px}.card p{font-size:14px;color:rgba(10,31,24,.65);line-height:1.6}
+.host{min-height:100vh;display:grid;grid-template-columns:1fr 360px}
+.hmain{padding:36px 48px 48px}.hside{background:var(--deep);color:#fff;padding:30px 26px;display:flex;flex-direction:column;gap:18px}
+.hhead{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(10,31,24,.1);padding-bottom:18px;margin-bottom:26px}
+.prog{display:flex;gap:6px;margin-bottom:26px}.prog div{flex:1;height:5px;background:rgba(10,31,24,.1)}.prog .done{background:var(--dk)}.prog .on{background:var(--g)}
+.stagebig{font-family:'Bebas Neue';font-size:clamp(90px,12vw,170px);line-height:.9;color:transparent;-webkit-text-stroke:2px var(--deep)}
+.qtext{font-family:'Noto Serif TC',serif;font-weight:700;font-size:clamp(22px,2.4vw,34px);line-height:1.5;margin:14px 0 26px}
+.opts{display:grid;gap:12px}
+.opt{display:flex;gap:16px;align-items:center;padding:18px 22px;background:#fff;border:1.5px solid rgba(10,31,24,.12);font-size:clamp(16px,1.6vw,22px);position:relative;overflow:hidden;text-align:left;font-family:inherit;color:var(--ink);width:100%}
+.opt .k{font-family:'Bebas Neue';font-size:30px;color:var(--dk);width:34px;flex-shrink:0}
+.opt .bar{position:absolute;left:0;top:0;bottom:0;background:var(--soft);z-index:0;transition:width .6s}.opt>*:not(.bar){position:relative;z-index:1}
+.opt .cnt{margin-left:auto;font-family:'Bebas Neue';font-size:24px}
+.opt.ok{border-color:var(--dk);background:#E3FBEC}.opt.no{opacity:.45}.opt.cut{text-decoration:line-through;opacity:.3}
+.opt.sel{border-color:var(--deep);background:rgba(120,250,174,.18)}
+button.opt{cursor:pointer}
+.reveal{margin-top:22px;background:var(--deep);color:#fff;padding:22px 26px;border-left:4px solid var(--accent)}
+.reveal .credit{font-family:'Bebas Neue';letter-spacing:.2em;color:var(--accent);font-size:15px}
+.reveal p{line-height:1.8;font-size:17px;margin-top:6px}
+.vtag{display:inline-block;font-family:'Bebas Neue';letter-spacing:.2em;font-size:13px;background:var(--g);color:var(--deep);padding:4px 10px;margin-right:6px}
+.event{background:#FFF3D6;border-left:4px solid var(--accent);padding:12px 18px;margin-bottom:16px;color:#6A4300}
+.toolrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.tchip{font-size:13px;padding:8px 12px;border:1px dashed var(--dk);color:var(--dk);background:#fff}.tchip.used{background:var(--accent);border-style:solid}.tchip.gone{opacity:.35}
+.qrbox{background:#fff;padding:14px;display:flex;justify-content:center}.qrbox canvas{width:100%;max-width:260px;image-rendering:pixelated}
+.code{font-family:'Bebas Neue';font-size:60px;letter-spacing:.25em;color:var(--g);text-align:center;line-height:1}
+.meter{background:rgba(255,255,255,.1);height:12px;position:relative}.meter i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--g),var(--accent));transition:width .8s}
+.big{font-family:'Bebas Neue';font-size:64px;line-height:1;color:var(--g)}
+.lbl{font-size:11px;letter-spacing:.2em;color:rgba(244,248,245,.55)}
+.plist{display:flex;flex-wrap:wrap;gap:6px;max-height:40vh;overflow:auto}
+.plist span{background:rgba(120,250,174,.14);color:var(--g);padding:5px 10px;font-size:13px}
+.plist span.a{background:var(--g);color:var(--deep)}
+.cycle{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}.cycle span{font-size:12px;padding:5px 10px;background:rgba(10,31,24,.06)}.cycle .on{background:var(--deep);color:var(--g)}
+.puzzle{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:20px}
+.pz{min-height:120px;background:rgba(10,31,24,.06);border:1.5px dashed rgba(10,31,24,.2);padding:14px;font-size:14px;line-height:1.5;display:flex;flex-direction:column;justify-content:center}
+.pz.got{background:var(--deep);color:#fff;border:none;animation:fu .5s}.pz b{color:var(--g);font-size:12px;letter-spacing:.1em}
+.phone{max-width:560px;margin:0 auto;padding:22px 20px 60px}
+.ptop{background:var(--deep);color:#fff;padding:18px 20px;display:flex;justify-content:space-between;align-items:center}
+.ptop img{height:34px}
+.pcard{background:#fff;padding:22px;margin-top:16px;border-left:4px solid var(--g);box-shadow:0 2px 20px rgba(10,31,24,.05)}
+.wait{text-align:center;padding:50px 10px;color:rgba(10,31,24,.6)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--g);animation:p 1.2s infinite}@keyframes p{50%{opacity:.2}}
+.toolcard{background:var(--accent);color:var(--deep);padding:16px;margin-top:16px}
+.res{font-family:'Noto Serif TC';font-size:28px;font-weight:900;margin:8px 0}
+.cert{max-width:900px;margin:30px auto;background:#fff;padding:50px 60px;border:1px solid rgba(10,31,24,.1);box-shadow:0 10px 50px rgba(10,31,24,.1);position:relative;text-align:center}
+.cert::before{content:'';position:absolute;inset:14px;border:1.5px solid var(--dk);pointer-events:none}
+.cert .logo{background:var(--deep);padding:10px 20px;width:220px}
+.cert h1{font-family:'Noto Serif TC';font-weight:900;font-size:40px;margin:16px 0 6px}
+.cert ol{text-align:left;max-width:620px;margin:16px auto;line-height:1.9;font-size:15px}
+.board{max-width:1200px;margin:0 auto;padding:36px 32px 80px}
+table{width:100%;border-collapse:collapse;background:#fff;font-size:14px}
+th{background:var(--deep);color:var(--g);font-family:'Bebas Neue','Noto Serif TC';letter-spacing:.12em;font-weight:400;padding:12px 10px;text-align:left}
+td{padding:10px;border-bottom:1px solid rgba(10,31,24,.07);vertical-align:top}
+tr.rg td{background:rgba(120,250,174,.12);font-family:'Bebas Neue';letter-spacing:.2em;color:var(--dk)}
+tr.zero td{color:rgba(10,31,24,.4)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}
+.kpi{background:var(--deep);color:#fff;padding:18px 20px}.kpi .big{font-size:48px}
+.names{font-size:12px;color:rgba(10,31,24,.65);line-height:1.6}
+.pill{display:inline-block;padding:2px 8px;font-size:12px;background:var(--g);color:var(--deep)}
+.gate{position:fixed;inset:0;background:var(--deep);z-index:99;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;color:#fff;padding:20px}
+.gate input{background:transparent;border:none;border-bottom:1.5px solid var(--g);color:#fff;font-size:20px;padding:10px;text-align:center;outline:none;width:280px}
+.conn{position:fixed;right:14px;bottom:12px;z-index:50;font-family:'Bebas Neue';letter-spacing:.2em;font-size:11px;background:var(--deep);color:var(--g);padding:5px 10px}
+.conn.off{color:#FFB3B3}
+@media(max-width:900px){.split,.host{grid-template-columns:1fr}.left{padding:34px 26px}.right{padding:40px 26px}.hmain{padding:24px}.kpis{grid-template-columns:1fr 1fr}.hero{margin-top:40px}}
+@media print{.noprint,.conn{display:none!important}body::before{display:none}.cert{box-shadow:none;margin:0}}
+</style></head><body>
+<div id="app"></div><div class="conn" id="conn">CLOUD · CONNECTING</div>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<script>
+const OUTLET_GROUPS=[
+ {region:'北部 · NORTH',items:['金元三新莊服務廠','金元三新莊展間','金元三中和服務廠','金元三中和展間','思科達北區服務廠','思科達北區展間','晉暘服務廠','喬順民生展間','喬順承德展間','永昇中山服務廠','永昇平鎮服務廠','榮陞桃園展間','榮陞平鎮展間','吉揚竹北服務廠','吉揚竹北展間','吉揚新竹服務廠','吉揚新竹展間']},
+ {region:'中部 · CENTRAL',items:['原莊服務廠','原莊展間','偕聖豐原服務廠','偕聖豐原展間','偕聖沙鹿服務廠','偕聖沙鹿展間','鈞銓南屯服務廠','鈞銓五權展間','鈞銓文心服務廠','鈞銓文心展間','鈞銓彰化服務廠','鈞銓彰化展間']},
+ {region:'南部 · SOUTH',items:['永驊台南展間','永驊永康服務廠','永驊永康展間','永驊民族服務廠','永驊民族展間','永驊鳳山服務廠','永驊鳳山展間']},
+ {region:'其他 · OTHER',items:['總公司 Škoda Auto Taiwan','其他']}
+];
+const TOOLS={
+ t1:{name:'照片桌牌 2.0',en:'Picture Name Tag 2.0',stage:'購車洽談與進廠維修',fx:'讓客戶記住你的臉 → 全隊刪去一個錯誤選項'},
+ t2:{name:'售後服務聯絡卡',en:'After Sales Contact',stage:'新車交車',fx:'銷售→售後無縫交接 → 答錯的隊友也拿一半溫度'},
+ t3:{name:'銷售顧問聯絡卡',en:'Sales Contact',stage:'回廠保養維修',fx:'售服自然引薦 → 本題顧客溫度 ×2'}
+};
+const EVENTS=[
+ {t:'神秘客來訪',d:'本題全隊答對率達 60%，顧客溫度額外 +30°',fx:'mys'},
+ {t:'週末人潮爆滿',d:'現場很忙！本題討論時間縮短為 30 秒',fx:'busy'},
+ {t:'主管晨會加油',d:'主管肯定大家的用心，顧客溫度立即 +20°',fx:'boost'},
+ {t:'平常的一天',d:'按部就班，把每個小行為做到位',fx:null}
+];
+const ABLE_STEPS=['選題','執行','顧客反應','改善','納入日常'];
+const STAGES=[
+{key:'WILLING',no:'01',title:'願意',period:'2026 Q2',story:'策略說明會、三本 HT 手冊、認證測驗、團隊拼圖與承諾書——我們先從「願意」開始。',
+ q:[
+ {s:'Human Touch 的三大核心價值是？',o:['Human／Simplifying／Surprising','Fast／Cheap／Easy','Price／Product／Promotion'],a:0,e:'Human 讓客戶感覺像老朋友；Simplifying 讓生活更簡單、節省客戶時間；Surprising 超越客戶期待。'},
+ {s:'Human Touch 帶來的思維轉變是哪一個方向？',o:['產品 → 需求 → 客戶','客戶 → 需求 → 產品','價格 → 產品 → 客戶'],a:1,e:'把客戶放在第一位，從客戶需求出發。'},
+ {s:'6 月 HT 承諾活動，大家依序完成了哪些步驟？',o:['認證測驗 → 列印證書 → 團隊拼圖 → 簽署承諾書','簽到 → 領便當 → 回家','只看一支影片'],a:0,e:'Certify → Recognize → Build Together → Commit，每一位夥伴都親手簽下承諾。'}
+ ]},
+{key:'SKILL',no:'02',title:'技能',period:'2026 Q3',story:'WBT 線上課程 + 行為模型實體訓練：銷售 198 位、售服 146 位夥伴一起從真實案例中學習。下面每一題，都是我們夥伴真的做過的事。',
+ q:[
+ {s:'四年前，一對盼望孩子的夫妻買了 KODIAQ。四年後預產期當天，先生傳訊息說臨時需要幫忙去醫院。如果你是他的銷售顧問？',o:['恭喜他，建議叫計程車比較快','立刻放下手邊工作，開車載夫妻倆去醫院','回覆「我在上班，晚點聯絡」'],a:1,v:'Human',c:'榮陞平鎮｜林昭博',e:'四年的關心沒有給過壓力，一句「需要幫忙請一定告訴我」在關鍵時刻兌現——客戶成了朋友，甚至家人。'},
+ {s:'陳小姐的狗狗一個月前當了小天使，車上後座還留著牠的毛。保養時，你會怎麼處理後座？',o:['照常吸乾淨，什麼都不提','怕她難過，乾脆不整理後座','照常清潔，但把狗毛收進紅包袋，交車時交給她留念'],a:2,v:'Surprising',c:'喬順北投｜陳曉雯',e:'不多花錢，只是感受到她的心情——當晚先生特地打電話來道謝。'},
+ {s:'一位馬來西亞籍牙醫試乘時一直擦汗、手微微發抖，對買車興趣不高。你判斷原因可能是？',o:['他嫌車子不夠豪華','家鄉是右駕，對台灣左駕路況很有壓力','他只是天氣熱'],a:1,v:'Human',c:'偕聖豐原｜陳奕帆',e:'找到有外籍人士課程的駕訓班、陪他報名，一個月後再試乘——客戶從原本打算請司機，到自己開心簽約。'},
+ {s:'中午休息時間，一台「非 Škoda」的車排氣管在雨中脫落，車主已被隔壁品牌服務廠拒絕。你會？',o:['「不是我們品牌，沒辦法」','「你先別急，我們過去看看怎麼幫你」','給她拖吊公司電話'],a:1,v:'Human',c:'喬順北投｜林奕霆、白金明',e:'技師跪在雨中先暫時固定，再進廠檢查說明，沒有收費。車主說：換車時決不會忘記 Škoda 北投廠。'},
+ {s:'客休室裡一位 8 歲的孩子停不下來跑來跑去，媽媽很尷尬、一直向其他客人道歉。你可以？',o:['請媽媽管好孩子','邀孩子一起動手做熱壓吐司，讓她專注半小時','把孩子帶去展間別吵到人'],a:1,v:'Simplifying',c:'喬順北投｜陳渼媛',e:'孩子專心做吐司，客休室恢復安靜，媽媽終於能好好休息——這是對媽媽最大的幫忙。'},
+ {s:'儀表板亮燈的車主進廠，一邊看手錶、一邊顯得很焦急。第一句最好的關心是？',o:['「請先到客休室等候報價」','「您現在最擔心的是車子，還是趕不及接女兒？」','「這個燈很常見，沒什麼」'],a:1,v:'Simplifying',c:'金元三新莊｜陳章豪',e:'先處理人的擔心，再處理車的問題——客戶感受到的是被理解。'}
+ ]},
+{key:'ABLE',no:'03',title:'做得到',period:'2026 Q4',able:true,story:'從 10 月開始，每個據點自選行為創想、自己執行、記錄顧客反應、改善，最後納入日常；再加上三張「QR Code 聯絡卡」工具包，讓客戶記得你、找得到對的人。',
+ q:[
+ {st:0,s:'據點常有帶小小孩的家庭來商談，家長常常分心。這個月的行為創想要選什麼？',o:['準備兒童畫具、積木與孕婦靠枕','請家長下次不要帶小孩','加快講解，早點結束'],a:0,v:'Human',c:'永驊鳳山｜10 月行為創想',e:'依自己據點顧客的真實痛點選題，而不是照表抄做。'},
+ {st:2,s:'執行後發現嬰幼兒還是容易哭鬧。執行紀錄表上應該怎麼寫？',o:['寫「無特殊狀況」比較好看','誠實寫下問題與觀察','這欄先空著'],a:1,v:'Human',e:'最有價值的報告，是寫出問題並願意調整的報告。'},
+ {st:3,s:'那下一步最好的做法是？',o:['依年齡準備不同玩具或點心，再試一次','直接放棄這個點子','以後只服務沒有小孩的客戶'],a:0,v:'Simplifying',e:'發現不好用 → 修正 → 再驗證，這就是學習。'},
+ {st:4,s:'行為驗證有效了，怎麼讓它留下來？',o:['寫進據點 SOP／交車清單／新人訓練，晨會分享','記在自己腦中就好','只在神秘客來時做'],a:0,v:'Simplifying',e:'From Ideas to Habits：有效行為沉澱成據點標準與團隊習慣。'},
+ {tool:'t1',s:'客戶坐下洽談購車，想留下你的聯絡方式。最 Human Touch 的做法是？',o:['手寫電話在便條紙上','桌上擺照片桌牌 2.0，引導客戶掃描 QR Code','請客戶上官網自己找'],a:1,v:'Human',e:'照片桌牌 2.0：讓客戶記住你的臉，無紙化存下聯絡資料。照片最好呈現你與 Škoda 的連結（最愛車型）。'},
+ {tool:'t2',s:'新車交車時，怎麼讓客戶日後免搜尋就找到對的售後人員？',o:['遞交售後服務聯絡卡，並盡可能當面介紹售服聯絡人','等第一次保養再說','請客戶打總機轉接'],a:0,v:'Simplifying',e:'售後服務聯絡卡：銷售先把售服夥伴的 QR Code 存在手機，納入交車流程，做好銷售 → 售後交接。'},
+ {tool:'t3',s:'回廠時發現車輛高里程、需要大修，客戶可能考慮換車。售服夥伴應該？',o:['直接報新車價格推銷','當作沒看到','在適當時機遞上銷售顧問聯絡卡，介紹銷售顧問姓名並鼓勵諮詢'],a:2,v:'Human',e:'銷售顧問聯絡卡：售服自然引薦，服務與銷售無縫合作。'}
+ ]},
+{key:'NEXT LEVEL',no:'04',title:'下一個境界',period:'2027 Q1',final:true,story:'HT Index、第二輪神秘客、Best Cases 分享——Next Level 不是一個人做到，而是整個據點一起把好行為變成日常。請每位夥伴在手機上寫下一個「我會留下來的習慣」，拼出我們的 Human Touch。',q:[]}
+];
+const HABIT_SUG=['桌上擺照片桌牌 2.0','交車時當面介紹售服聯絡人','高里程時引薦銷售顧問','雨天先詢問再撐傘','離店前整理客戶最在意的 3 個重點','交車後第 3／7／30 天主動關心','先問客戶最擔心什麼','主動更新維修進度','準備兒童小角落','晨會分享一個顧客故事'];
+
+</script>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+import {getFirestore,doc,setDoc,getDoc,getDocs,updateDoc,collection,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+const firebaseConfig={apiKey:"AIzaSyAHhXBouBO2c9Mtf4nt9uR9ZjW9svwjHM4",authDomain:"htgame-6d38e.firebaseapp.com",databaseURL:"https://htgame-6d38e-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"htgame-6d38e",storageBucket:"htgame-6d38e.firebasestorage.app",messagingSenderId:"445600432977",appId:"1:445600432977:web:e63c2e7b14f43074828970"};
+const LOGO="data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA2MDAgMjUwJz48dGV4dCB4PScwJyB5PScxMjUnIGZvbnQtZmFtaWx5PSdBcmlhbCBSb3VuZGVkIE1UIEJvbGQsQXJpYWwsSGVsdmV0aWNhLHNhbnMtc2VyaWYnIGZvbnQtd2VpZ2h0PSc5MDAnIGZvbnQtc2l6ZT0nMTU1JyBmaWxsPScjNzhGQUFFJz5odW1hbjwvdGV4dD48cGF0aCBkPSdNNTUgMTcyIFExNTAgMjY1IDI1MCAyMDAnIHN0cm9rZT0nI0Y1QjM0Micgc3Ryb2tlLXdpZHRoPScxNicgZmlsbD0nbm9uZScgc3Ryb2tlLWxpbmVjYXA9J3JvdW5kJy8+PGNpcmNsZSBjeD0nMTQwJyBjeT0nMTgwJyByPScxMCcgZmlsbD0nI0Y1QjM0MicvPjxjaXJjbGUgY3g9JzIwMCcgY3k9JzE4Nicgcj0nMTAnIGZpbGw9JyNGNUIzNDInLz48dGV4dCB4PScyNzUnIHk9JzIzOCcgZm9udC1mYW1pbHk9J0FyaWFsLEhlbHZldGljYSxzYW5zLXNlcmlmJyBmb250LXdlaWdodD0nMzAwJyBmb250LXNpemU9JzExMicgZmlsbD0nIzc4RkFBRSc+dG91Y2g8L3RleHQ+PC9zdmc+";
+const ROOMS='htg_rooms',RESULTS='htg_results',PWD='ILoveSkoda';
+let db;const conn=document.getElementById('conn');
+try{db=getFirestore(initializeApp(firebaseConfig));conn.textContent='CLOUD · HTGAME';}catch(e){conn.textContent='OFFLINE';conn.classList.add('off');}
+const app=document.getElementById('app');
+const H=h=>{app.innerHTML='<div class="fade">'+h+'</div>';};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const K='ABC';
+const BASE=location.origin+location.pathname;
+const params=new URLSearchParams(location.search);
+const FLAT=[];STAGES.forEach((s,si)=>s.q.forEach((q,qi)=>FLAT.push({si,qi})));
+const qkey=(si,qi)=>si+'_'+qi;
+const regionOf=o=>(OUTLET_GROUPS.find(g=>g.items.includes(o))||{region:'其他 · OTHER'}).region;
+const outletOptions=()=>OUTLET_GROUPS.map(g=>`<optgroup label="${g.region}">${g.items.map(i=>`<option>${i}</option>`).join('')}</optgroup>`).join('');
+function roadHtml(cur){return `<div class="road">${STAGES.map((s,i)=>`<div><div class="n">${s.no}</div><div class="t">${s.key}<br>${s.period}</div></div>`).join('')}</div>`;}
+function gate(next){if(sessionStorage.getItem('htg_ok')==='1')return next();
+ H(`<div class="gate"><img class="logo" src="${LOGO}"><div class="bebas" style="color:var(--g)">DQM · 主持人／管理者入口</div><input type="password" id="pw" placeholder="存取密碼"><button class="btn sm gold" id="go"><span>ENTER</span></button><div id="er" style="color:#FFB3B3;font-size:13px"></div></div>`);
+ const f=()=>{if(document.getElementById('pw').value.trim()===PWD){sessionStorage.setItem('htg_ok','1');next();}else document.getElementById('er').textContent='密碼不正確';};
+ document.getElementById('go').onclick=f;document.getElementById('pw').onkeydown=e=>{if(e.key==='Enter')f();};}
+function drawQR(el,text){if(!el||typeof qrcode==='undefined')return;const q=qrcode(0,'M');q.addData(text);q.make();const n=q.getModuleCount(),cs=8,m=4,size=(n+m*2)*cs;
+ const c=document.createElement('canvas');c.width=c.height=size;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,size,size);x.fillStyle='#042B1F';
+ for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))x.fillRect((k+m)*cs,(r+m)*cs,cs,cs);el.innerHTML='';el.appendChild(c);}
+
+function home(){
+ H(`<div class="split"><div class="left"><img class="logo" src="${LOGO}">
+ <h1 class="hero">From Ideas<span class="l2">to Habits</span></h1>
+ <p class="sub">從願意、技能到做得到——經銷商夥伴與總公司一路走來，一起把 Human Touch 變成每天的服務。今天，全據點一起掃碼上線，合作破關，邁向 <b style="color:var(--g)">Human Touch Next Level</b>。</p>
+ ${roadHtml(-1)}</div>
+ <div class="right"><div class="eyebrow">NEXT LEVEL · 據點協作挑戰</div><h2 class="ftitle">選擇你的入口</h2><p class="hint">主持人（DQM／主管）開啟挑戰房間並投影；夥伴用手機掃 QR Code 加入，一起作答破關。</p>
+ <div class="menu">
+ <div class="card" onclick="location.href='?host=1'"><div class="eyebrow">01 · HOST</div><h3>開啟挑戰房間</h3><p>選擇據點、產生 QR Code，投影在會議室大螢幕帶領全隊破關。</p></div>
+ <div class="card" onclick="joinCode()"><div class="eyebrow">02 · JOIN</div><h3>輸入房間代碼加入</h3><p>沒辦法掃碼時，輸入大螢幕上的 4 碼代碼。</p></div>
+ <div class="card" onclick="location.href='?board=1'"><div class="eyebrow">03 · BOARD</div><h3>各據點成績看板</h3><p>參與據點、參加人員、答對率與顧客溫度，可匯出 CSV。</p></div>
+ </div></div></div>`);}
+window.joinCode=()=>{const c=(prompt('請輸入房間代碼')||'').trim().toUpperCase();if(c)location.href='?room='+c;};
+
+let R=null,RID=null,PLAYERS=[],ANS=[],timerI=null;
+function hostSetup(){
+ H(`<div class="split"><div class="left"><img class="logo" src="${LOGO}"><h1 class="hero">開啟<span class="l2">挑戰房間</span></h1><p class="sub">建議在晨會或訓練時進行，約 25–30 分鐘。銷售與售服夥伴混合組隊效果最好。</p>${roadHtml(-1)}</div>
+ <div class="right"><div class="eyebrow">HOST SETUP</div><h2 class="ftitle">挑戰設定</h2><p class="hint">一個房間代表一個據點的一場挑戰，成績會記錄到該據點。</p>
+ <div class="field"><label>經銷商據點</label><select id="ol"><option value="">— 請選擇 —</option>${outletOptions()}</select></div>
+ <div class="field"><label>主持人</label><input id="hn" placeholder="例：DQM 王小明"></div>
+ <div class="field"><label>每題討論時間</label><select id="tm"><option value="45">45 秒</option><option value="60" selected>60 秒</option><option value="90">90 秒</option></select></div>
+ <button class="btn" id="mk"><span>建立房間 CREATE</span></button><button class="btn ghost" onclick="location.href='?'"><span>返回</span></button></div></div>`);
+ document.getElementById('mk').onclick=async()=>{const ol=document.getElementById('ol').value;if(!ol)return alert('請選擇據點');
+  const code=Array.from({length:4},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');
+  const room={code,outlet:ol,region:regionOf(ol),host:document.getElementById('hn').value.trim(),sec:+document.getElementById('tm').value,
+   phase:'lobby',si:0,qi:0,temp:0,tools:{},toolUsed:{},hint:null,event:null,deadline:0,log:[],createdAt:new Date().toISOString()};
+  try{await setDoc(doc(db,ROOMS,code),room);}catch(e){return alert('雲端建立失敗：'+e.message+'\n請確認 Firestore 規則已開放 htg_rooms。');}
+  history.replaceState(null,'','?host='+code);hostRun(code);};
+}
+function hostRun(code){RID=code;
+ onSnapshot(doc(db,ROOMS,code),s=>{if(!s.exists())return H('<div class="board">找不到房間</div>');R=s.data();hostRender();});
+ onSnapshot(collection(db,ROOMS,code,'players'),s=>{PLAYERS=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.joinedAt||'').localeCompare(b.joinedAt||''));hostRender();});
+ onSnapshot(collection(db,ROOMS,code,'answers'),s=>{ANS=s.docs.map(d=>d.data());hostRender();maybeAuto();});}
+const upd=o=>updateDoc(doc(db,ROOMS,RID),o);
+function toolIcon(pid){return Object.entries(R.tools||{}).filter(([t,p])=>p===pid).map(()=>' 🎫').join('');}
+function side(){const url=BASE+'?room='+RID;const k=R.si+'_'+R.qi;const answered=new Set(ANS.filter(a=>a.k===k).map(a=>a.pid));
+ const pct=Math.min(100,Math.round(R.temp/((FLAT.length*10+60)*Math.max(PLAYERS.length,1))*100*1.2));
+ return `<div class="hside"><img class="logo" style="width:180px" src="${LOGO}">
+ <div><div class="lbl">據點 OUTLET</div><div class="serif" style="font-size:22px;font-weight:700;margin-top:4px">${esc(R.outlet)}</div></div>
+ <div class="qrbox" id="qr"></div><div class="code">${RID}</div><div class="lbl" style="text-align:center">掃碼或輸入代碼加入 · 隨時可加入</div>
+ <div><div class="lbl">團隊顧客溫度 CUSTOMER WARMTH</div><div class="big">${R.temp}°</div><div class="meter"><i style="width:${pct}%"></i></div></div>
+ <div><div class="lbl">夥伴 ${PLAYERS.length} 位${R.phase==='question'?` · 已作答 ${answered.size}`:''}</div><div class="plist" style="margin-top:8px">${PLAYERS.map(p=>`<span class="${answered.has(p.id)||(R.phase==='final'&&p.habit)?'a':''}">${esc(p.name)}${toolIcon(p.id)}</span>`).join('')||'<span>等待夥伴加入…</span>'}</div></div>
+ <div style="margin-top:auto;font-size:11px;color:rgba(255,255,255,.4);word-break:break-all">${url}</div></div>`;}
+function hostRender(){if(!R)return;const st=STAGES[R.si];let main='';
+ const prog=`<div class="prog">${STAGES.map((s,i)=>`<div class="${i<R.si?'done':i===R.si&&R.phase!=='lobby'?'on':''}"></div>`).join('')}</div>`;
+ const head=`<div class="hhead"><div class="eyebrow">HUMAN TOUCH · NEXT LEVEL CHALLENGE</div><div style="font-size:13px;color:rgba(10,31,24,.6)">主持人 <b>${esc(R.host||'—')}</b></div></div>`;
+ if(R.phase==='lobby'){main=`<div class="stagebig">READY</div><h2 class="qtext">歡迎 ${esc(R.outlet)} 的夥伴！<br>請用手機掃描右側 QR Code 加入挑戰。</h2>
+  <div class="card"><h3>今天的遊戲規則</h3><p>① 全隊共用一個「顧客溫度」，每位夥伴答對都會為團隊加溫。<br>② 每題請先和身邊夥伴討論，再各自在手機上作答。<br>③ 第 3 關會隨機發給 3 位夥伴「HT 工具包」，持有人可在關鍵時刻為全隊使用一次。<br>④ 最後每人寫下一個要留下來的習慣，一起拼出我們的 Human Touch。</p></div>
+  <button class="btn" style="max-width:420px;margin-top:24px" ${PLAYERS.length?'':'disabled'} onclick="hStage(0)"><span>開始挑戰 START · ${PLAYERS.length} 位夥伴</span></button>`;}
+ else if(R.phase==='intro'){main=`<div class="eyebrow">STAGE ${st.no} · ${st.period}</div><div class="stagebig">${st.key}</div><h2 class="qtext">第 ${+st.no} 關｜${st.title}</h2><p style="font-size:19px;line-height:1.9;max-width:820px">${st.story}</p>
+  ${st.able?`<div class="toolrow">${Object.entries(TOOLS).map(([t,v])=>`<div class="tchip">🎫 ${v.name}｜持有人：<b>${esc((PLAYERS.find(p=>p.id===R.tools[t])||{}).name||'—')}</b><br><small>${v.fx}</small></div>`).join('')}</div>`:''}
+  <button class="btn" style="max-width:420px;margin-top:28px" onclick="${st.final?'hFinal()':'hQ('+R.si+',0)'}"><span>${st.final?'開始拼圖 BUILD TOGETHER':'進入第 1 題 GO'}</span></button>`;}
+ else if(R.phase==='question'||R.phase==='reveal'){const q=st.q[R.qi],k=qkey(R.si,R.qi),as=ANS.filter(a=>a.k===k),rv=R.phase==='reveal';
+  const cnt=[0,1,2].map(i=>as.filter(a=>a.c===i).length);
+  main=`<div class="eyebrow">STAGE ${st.no} · ${st.key} · 第 ${R.qi+1} / ${st.q.length} 題</div>
+  ${R.event?`<div class="event" style="margin-top:12px">⚡ <b>現場狀況：${R.event.t}</b>　${R.event.d}</div>`:''}
+  ${st.able&&q.st!==undefined?`<div class="cycle" style="margin-top:10px">${ABLE_STEPS.map((s,i)=>`<span class="${i===q.st?'on':''}">${s}</span>`).join('')}</div>`:''}
+  ${q.tool?`<div class="vtag" style="margin-top:10px;background:var(--accent)">工具包｜${TOOLS[q.tool].name}</div>`:''}
+  <div class="qtext">${q.s}</div>
+  <div class="opts">${q.o.map((o,i)=>`<div class="opt ${rv?(i===q.a?'ok':'no'):''} ${R.hint&&R.hint.k===k&&R.hint.cut===i?'cut':''}">${rv?`<div class="bar" style="width:${as.length?cnt[i]/as.length*100:0}%"></div>`:''}<span class="k">${K[i]}</span><span>${o}</span>${rv?`<span class="cnt">${cnt[i]}</span>`:''}</div>`).join('')}</div>
+  ${st.able?`<div class="toolrow">${Object.entries(TOOLS).map(([t,v])=>`<div class="tchip ${R.toolUsed[t]===k?'used':R.toolUsed[t]?'gone':''}">🎫 ${v.name}${R.toolUsed[t]===k?' · 本題啟用！':R.toolUsed[t]?' · 已使用':''}</div>`).join('')}</div>`:''}
+  ${rv?`<div class="reveal">${q.v?`<span class="vtag">${q.v}</span>`:''}${q.c?`<span class="credit">真實案例 · ${q.c}</span>`:''}<p>${q.e}</p><p style="color:var(--g);font-family:'Bebas Neue';letter-spacing:.15em;font-size:20px;margin-top:10px">答對 ${R.lastGain?.c??0} / ${as.length} 位 · 顧客溫度 +${R.lastGain?.g??0}°</p></div>
+   <button class="btn" style="max-width:420px;margin-top:20px" onclick="hNext()"><span>下一步 NEXT</span></button>`
+  :`<div style="display:flex;gap:14px;align-items:center;margin-top:22px"><div class="bebas" id="clk" style="font-size:34px;color:var(--dk)"></div><button class="btn sm" onclick="hReveal()"><span>揭曉答案 REVEAL</span></button></div>`}`;}
+ else if(R.phase==='final'){const ps=PLAYERS;main=`<div class="eyebrow">STAGE 04 · NEXT LEVEL</div><h2 class="qtext">一人一塊，拼出我們的 Human Touch</h2><p>請每位夥伴在手機上寫下「我會留下來的一個日常習慣」。已完成 <b>${ps.filter(p=>p.habit).length}</b> / ${ps.length}</p>
+  <div class="puzzle">${ps.map(p=>`<div class="pz ${p.habit?'got':''}">${p.habit?`<b>${esc(p.name)}</b>${esc(p.habit)}`:`🧩 ${esc(p.name)}`}</div>`).join('')}</div>
+  <button class="btn" style="max-width:420px;margin-top:24px" onclick="hDone()"><span>完成拼圖 · 簽署 NEXT LEVEL 承諾</span></button>`;}
+ else if(R.phase==='done'){return certView();}
+ app.innerHTML=`<div class="host"><div class="hmain">${head}${prog}${main}</div>${side()}</div>`;
+ drawQR(document.getElementById('qr'),BASE+'?room='+RID);tick();}
+function tick(){clearInterval(timerI);if(R.phase!=='question')return;const f=()=>{const el=document.getElementById('clk');if(!el)return;const t=Math.max(0,Math.ceil((R.deadline-Date.now())/1000));el.textContent=t>0?'討論倒數 '+t+'s':'⏰ TIME UP';if(t<=0)clearInterval(timerI);};f();timerI=setInterval(f,500);}
+function maybeAuto(){if(!R||R.phase!=='question')return;const k=qkey(R.si,R.qi);const n=new Set(ANS.filter(a=>a.k===k).map(a=>a.pid)).size;if(PLAYERS.length&&n>=PLAYERS.length)setTimeout(()=>{if(R.phase==='question'&&qkey(R.si,R.qi)===k)hReveal();},1200);}
+window.hStage=async si=>{const o={phase:'intro',si,qi:0,event:null,hint:null};
+ if(STAGES[si].able){const sh=[...PLAYERS].sort(()=>Math.random()-.5);const t={};['t1','t2','t3'].forEach((id,i)=>t[id]=sh[i%sh.length].id);o.tools=t;}
+ await upd(o);};
+window.hQ=async(si,qi)=>{const st=STAGES[si];let ev=null,sec=R.sec,temp=R.temp;
+ if(st.able){ev=EVENTS[Math.floor(Math.random()*EVENTS.length)];if(ev.fx==='busy')sec=30;if(ev.fx==='boost')temp+=20;}
+ await upd({phase:'question',si,qi,event:ev,deadline:Date.now()+sec*1000,temp,lastGain:null});};
+let revealing=false;
+window.hReveal=async()=>{if(revealing||R.phase!=='question')return;revealing=true;const q=STAGES[R.si].q[R.qi],k=qkey(R.si,R.qi);
+ const as=ANS.filter(a=>a.k===k);const c=as.filter(a=>a.c===q.a).length;let g=c*10;
+ if(R.toolUsed.t2===k)g+=(as.length-c)*5;if(R.toolUsed.t3===k)g*=2;if(R.event?.fx==='mys'&&as.length&&c/as.length>=.6)g+=30;
+ const log=[...(R.log||[]),{k,n:as.length,c,g}];await upd({phase:'reveal',temp:R.temp+g,lastGain:{c,g},log});revealing=false;};
+window.hNext=()=>{const st=STAGES[R.si];if(R.qi+1<st.q.length)hQ(R.si,R.qi+1);else hStage(R.si+1);};
+window.hFinal=()=>upd({phase:'final',event:null});
+window.hDone=async()=>{if(!confirm('確認完成並記錄本場成績？'))return;
+ const all=await getDocs(collection(db,ROOMS,RID,'answers'));const A=all.docs.map(d=>d.data());
+ const players=PLAYERS.map(p=>{const mine=A.filter(a=>a.pid===p.id);const cor=mine.filter(a=>{const[si,qi]=a.k.split('_').map(Number);return STAGES[si].q[qi].a===a.c;}).length;return{name:p.name,role:p.role||'',answered:mine.length,correct:cor,habit:p.habit||''};});
+ const tA=players.reduce((s,p)=>s+p.answered,0),tC=players.reduce((s,p)=>s+p.correct,0);
+ const rate=tA?Math.round(tC/tA*100):0;
+ const res={room:RID,outlet:R.outlet,region:R.region,host:R.host||'',players,playerCount:players.length,rate,temp:R.temp,questions:FLAT.length,completedAt:new Date().toISOString(),createdAt:serverTimestamp()};
+ try{await setDoc(doc(db,RESULTS,RID),res);}catch(e){alert('成績寫入失敗：'+e.message);}
+ await upd({phase:'done',rate});};
+function levelOf(r){return r>=90?'Next Level 傳奇據點':r>=75?'Next Level 達人據點':r>=60?'Next Level 實踐據點':'Next Level 啟程據點';}
+function certView(){const d=new Date();const ps=PLAYERS;
+ app.innerHTML=`<div class="cert fade"><img class="logo" src="${LOGO}"><div class="eyebrow" style="margin-top:18px">CERTIFICATE OF HUMAN TOUCH · NEXT LEVEL</div>
+ <h1>${esc(R.outlet)}</h1><p class="serif" style="font-size:18px">${ps.map(p=>esc(p.name)).join('、')}</p>
+ <p style="margin-top:16px;line-height:1.9">攜手完成 WILLING → SKILL → ABLE → NEXT LEVEL 旅程<br>團隊答對率 <b>${R.rate??0}%</b> ｜ 顧客溫度 <b>${R.temp}°</b><br><span class="vtag" style="font-size:16px;margin-top:8px">${levelOf(R.rate??0)}</span></p>
+ <ol>${ps.filter(p=>p.habit).map(p=>`<li><b>${esc(p.name)}</b>：${esc(p.habit)}</li>`).join('')}</ol>
+ <p class="serif" style="font-style:italic;color:var(--dk)">From Ideas to Habits — 讓每一個打動客戶的小行為，成為我們每天的自然習慣。</p>
+ <p style="font-size:12px;margin-top:14px;color:rgba(10,31,24,.5)">${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()} · Škoda Auto Taiwan</p></div>
+ <div class="noprint" style="max-width:900px;margin:0 auto 40px;display:flex;gap:10px"><button class="btn" onclick="print()"><span>列印證書 PRINT</span></button><button class="btn ghost" onclick="location.href='?board=1'"><span>成績看板 BOARD</span></button></div>`;}
+
+let ME=null,PR=null,myAns={};
+async function player(code){
+ const s=await getDoc(doc(db,ROOMS,code)).catch(()=>null);if(!s||!s.exists())return H(`<div class="phone"><div class="pcard">找不到房間 <b>${esc(code)}</b>，請確認代碼。</div></div>`);
+ const pid=localStorage.getItem('htg_pid_'+code);
+ if(pid){ME={id:pid,name:localStorage.getItem('htg_name_'+code)};return pListen(code);}
+ const r=s.data();
+ H(`<div class="ptop"><img src="${LOGO}"><span class="bebas" style="color:var(--g)">ROOM ${code}</span></div><div class="phone">
+ <div class="eyebrow">JOIN · 加入挑戰</div><h2 class="ftitle">${esc(r.outlet)}</h2><p class="hint">輸入你的姓名加入，和夥伴一起破關！</p>
+ <div class="field"><label>姓名</label><input id="nm" placeholder="請輸入姓名"></div>
+ <div class="field"><label>職務</label><select id="rl"><option>銷售顧問</option><option>服務顧問</option><option>技師</option><option>客休室／接待</option><option>主管</option><option>總公司</option><option>其他</option></select></div>
+ <button class="btn" id="jn"><span>加入 JOIN</span></button></div>`);
+ document.getElementById('jn').onclick=async()=>{const nm=document.getElementById('nm').value.trim();if(!nm)return alert('請輸入姓名');
+  const id='p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  try{await setDoc(doc(db,ROOMS,code,'players',id),{name:nm,role:document.getElementById('rl').value,joinedAt:new Date().toISOString(),habit:''});}catch(e){return alert('加入失敗：'+e.message);}
+  localStorage.setItem('htg_pid_'+code,id);localStorage.setItem('htg_name_'+code,nm);ME={id,name:nm};pListen(code);};}
+function pListen(code){RID=code;onSnapshot(doc(db,ROOMS,code),s=>{PR=s.data();pRender();});
+ onSnapshot(doc(db,ROOMS,code,'players',ME.id),s=>{if(s.exists())ME={id:ME.id,...s.data()};});}
+let ptimer=null;
+function pRender(){const r=PR;if(!r)return;const st=STAGES[r.si];const top=`<div class="ptop"><img src="${LOGO}"><span class="bebas" style="color:var(--g)">${esc(ME.name)} · ${r.temp}°</span></div>`;let b='';clearInterval(ptimer);
+ const myTools=Object.entries(r.tools||{}).filter(([t,p])=>p===ME.id).map(([t])=>t);
+ if(r.phase==='lobby')b=`<div class="wait"><span class="dot"></span><h2 class="serif" style="margin:16px 0 8px">已加入 ${esc(r.outlet)}</h2><p>請看大螢幕，等主持人開始挑戰。</p></div>`;
+ else if(r.phase==='intro')b=`<div class="pcard"><div class="eyebrow">STAGE ${st.no} · ${st.period}</div><h2 class="serif" style="margin:6px 0">${st.key}｜${st.title}</h2><p style="line-height:1.8;font-size:15px">${st.story}</p></div>
+  ${myTools.map(t=>`<div class="toolcard"><b>🎫 你拿到 HT 工具包：${TOOLS[t].name}</b><br><small>${TOOLS[t].fx}<br>題目進行中可為全隊使用一次，和夥伴討論何時用最有效！</small></div>`).join('')}`;
+ else if(r.phase==='question'||r.phase==='reveal'){const q=st.q[r.qi],k=qkey(r.si,r.qi),mine=myAns[k],rv=r.phase==='reveal';
+  b=`<div class="pcard"><div class="eyebrow">${st.key} · Q${r.qi+1}/${st.q.length}</div>${r.event?`<div class="event" style="margin:10px 0 0;font-size:13px">⚡ ${r.event.t}：${r.event.d}</div>`:''}<p class="serif" style="font-size:18px;font-weight:700;line-height:1.6;margin-top:10px">${q.s}</p><div id="pclk" class="bebas" style="color:var(--dk);margin-top:6px"></div></div>
+  <div class="opts" style="margin-top:12px">${q.o.map((o,i)=>{const cut=r.hint&&r.hint.k===k&&r.hint.cut===i;return `<button class="opt ${rv?(i===q.a?'ok':(mine===i?'no':'')):(mine===i?'sel':'')} ${cut?'cut':''}" ${rv||mine!==undefined||cut?'disabled':''} onclick="pAns(${i})"><span class="k">${K[i]}</span><span style="font-size:16px">${o}</span></button>`;}).join('')}</div>`;
+  if(!rv&&mine!==undefined)b+=`<div class="wait" style="padding:20px"><span class="dot"></span> 已送出，等待夥伴作答…</div>`;
+  if(rv)b+=`<div class="pcard"><div class="res">${mine===q.a?'🎉 答對了！':mine===undefined?'這題沒有作答':'💡 一起學習'}</div>${q.c?`<div class="bebas" style="color:var(--accent)">真實案例 · ${q.c}</div>`:''}<p style="line-height:1.8;margin-top:6px">${q.e}</p></div>`;
+  if(!rv&&st.able)b+=myTools.map(t=>r.toolUsed[t]?`<div class="toolcard" style="opacity:.5">🎫 ${TOOLS[t].name}${r.toolUsed[t]===k?'：本題已啟用！':'：已使用'}</div>`:`<button class="btn gold" style="margin-top:14px" onclick="pTool('${t}')"><span>🎫 為全隊使用「${TOOLS[t].name}」</span></button><p style="font-size:12px;margin-top:4px;color:rgba(10,31,24,.6)">${TOOLS[t].fx}</p>`).join('');}
+ else if(r.phase==='final'){b=ME.habit?`<div class="pcard"><div class="eyebrow">YOUR PIECE</div><h2 class="serif" style="margin:8px 0">🧩 ${esc(ME.habit)}</h2><p>已放入團隊拼圖，看看大螢幕！</p></div>`:
+  `<div class="pcard"><div class="eyebrow">STAGE 04 · NEXT LEVEL</div><h2 class="serif" style="margin:8px 0">我會留下來的一個日常習慣</h2><div class="field"><input id="hb" list="sg" placeholder="輸入或選擇建議"><datalist id="sg">${HABIT_SUG.map(s=>`<option value="${s}">`).join('')}</datalist></div><button class="btn" onclick="pHabit()"><span>放入拼圖 🧩</span></button></div>`;}
+ else if(r.phase==='done')b=`<div class="pcard" style="text-align:center"><div class="eyebrow">COMPLETED</div><h2 class="serif" style="margin:10px 0">恭喜 ${esc(r.outlet)}！</h2><p>團隊答對率 <b>${r.rate}%</b>｜顧客溫度 <b>${r.temp}°</b></p><p style="margin-top:10px">${levelOf(r.rate)}</p><p style="margin-top:14px;font-style:italic">From Ideas to Habits</p></div>`;
+ app.innerHTML=top+'<div class="phone fade">'+b+'</div>';
+ if(r.phase==='question'){const f=()=>{const el=document.getElementById('pclk');if(!el)return;const t=Math.max(0,Math.ceil((r.deadline-Date.now())/1000));el.textContent=t>0?'討論倒數 '+t+'s':'TIME UP · 請盡快作答';};f();ptimer=setInterval(f,500);}}
+window.pAns=async i=>{const k=qkey(PR.si,PR.qi);if(myAns[k]!==undefined)return;myAns[k]=i;pRender();
+ await setDoc(doc(db,ROOMS,RID,'answers',k+'__'+ME.id),{k,pid:ME.id,c:i,at:new Date().toISOString()});};
+window.pTool=async t=>{const k=qkey(PR.si,PR.qi);if(PR.toolUsed[t])return;if(!confirm('確定為全隊使用「'+TOOLS[t].name+'」？每個工具包只能用一次。'))return;
+ const o={['toolUsed.'+t]:k};if(t==='t1'){const q=STAGES[PR.si].q[PR.qi];const w=[0,1,2].filter(i=>i!==q.a);o.hint={k,cut:w[Math.floor(Math.random()*w.length)]};}
+ await updateDoc(doc(db,ROOMS,RID),o);};
+window.pHabit=async()=>{const v=document.getElementById('hb').value.trim();if(!v)return alert('請寫下一個具體的習慣');await updateDoc(doc(db,ROOMS,RID,'players',ME.id),{habit:v});ME.habit=v;pRender();};
+
+let RES=[];
+async function board(){H(`<div class="board"><div class="wait"><span class="dot"></span> 載入成績中…</div></div>`);
+ try{const s=await getDocs(collection(db,RESULTS));RES=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.completedAt||'').localeCompare(a.completedAt||''));}catch(e){return H(`<div class="board"><div class="card">讀取失敗：${esc(e.message)}</div></div>`);}
+ const by={};RES.forEach(r=>{(by[r.outlet]=by[r.outlet]||[]).push(r);});
+ const allNames=new Set();RES.forEach(r=>r.players.forEach(p=>allNames.add(r.outlet+'|'+p.name)));
+ const outlets=OUTLET_GROUPS.flatMap(g=>g.items);const joined=Object.keys(by).length;
+ const avg=RES.length?Math.round(RES.reduce((s,r)=>s+r.rate,0)/RES.length):0;
+ let rows='';OUTLET_GROUPS.forEach(g=>{rows+=`<tr class="rg"><td colspan="7">${g.region}</td></tr>`;
+  g.items.forEach(o=>{const L=by[o]||[];if(!L.length){if(o!=='其他'&&!o.startsWith('總公司'))rows+=`<tr class="zero"><td>${o}</td><td>0</td><td>0</td><td>—</td><td>—</td><td>—</td><td>尚未參加</td></tr>`;return;}
+   const names=[...new Set(L.flatMap(r=>r.players.map(p=>p.name)))];const best=Math.max(...L.map(r=>r.temp));const ra=Math.round(L.reduce((s,r)=>s+r.rate,0)/L.length);
+   rows+=`<tr><td><b>${o}</b></td><td>${L.length}</td><td>${names.length}</td><td>${ra}%</td><td>${best}°</td><td>${L[0].completedAt.slice(0,10)}</td><td class="names">${names.map(esc).join('、')}</td></tr>`;});});
+ H(`<div class="board"><div style="display:flex;justify-content:space-between;align-items:center"><img class="logo" style="background:var(--deep);padding:10px 18px;width:200px" src="${LOGO}"><div class="noprint" style="display:flex;gap:8px"><button class="btn sm" onclick="csv()"><span>匯出 CSV</span></button><button class="btn sm ghost" onclick="location.href='?'"><span>首頁</span></button></div></div>
+ <div class="eyebrow" style="margin-top:24px">NEXT LEVEL CHALLENGE · DASHBOARD</div><h1 class="ftitle" style="font-size:34px">各據點成績看板</h1>
+ <div class="kpis"><div class="kpi"><div class="lbl">參與據點</div><div class="big">${joined}<small style="font-size:22px">/${outlets.length-2}</small></div></div><div class="kpi"><div class="lbl">挑戰場次</div><div class="big">${RES.length}</div></div><div class="kpi"><div class="lbl">參加人次（據點×姓名）</div><div class="big">${allNames.size}</div></div><div class="kpi"><div class="lbl">平均答對率</div><div class="big">${avg}%</div></div></div>
+ <table><thead><tr><th>據點</th><th>場次</th><th>參加人數</th><th>平均答對率</th><th>最高顧客溫度</th><th>最近一場</th><th>參加人員</th></tr></thead><tbody>${rows}</tbody></table>
+ <h2 class="ftitle" style="font-size:24px;margin-top:40px">場次明細</h2>
+ <table><thead><tr><th>日期</th><th>據點</th><th>主持人</th><th>人數</th><th>答對率</th><th>溫度</th><th>參加人員（答對／作答）· 日常習慣</th></tr></thead><tbody>
+ ${RES.map(r=>`<tr><td>${r.completedAt.slice(0,16).replace('T',' ')}</td><td>${esc(r.outlet)}</td><td>${esc(r.host)}</td><td>${r.playerCount}</td><td><span class="pill">${r.rate}%</span></td><td>${r.temp}°</td><td class="names">${r.players.map(p=>`<b>${esc(p.name)}</b>（${esc(p.role)}）${p.correct}/${p.answered}${p.habit?' · '+esc(p.habit):''}`).join('<br>')}</td></tr>`).join('')||'<tr><td colspan="7">尚無紀錄</td></tr>'}</tbody></table></div>`);}
+window.csv=()=>{const L=[['日期','區域','據點','房間','主持人','姓名','職務','作答題數','答對題數','團隊答對率','團隊顧客溫度','日常習慣']];
+ RES.forEach(r=>r.players.forEach(p=>L.push([r.completedAt,r.region,r.outlet,r.room,r.host,p.name,p.role,p.answered,p.correct,r.rate,r.temp,p.habit])));
+ const t='\ufeff'+L.map(x=>x.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n');
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/csv'}));a.download='HT_NextLevel_成績_'+new Date().toISOString().slice(0,10)+'.csv';a.click();};
+
+if(params.get('room'))player(params.get('room').toUpperCase());
+else if(params.get('host')){const h=params.get('host');gate(()=>h==='1'?hostSetup():hostRun(h.toUpperCase()));}
+else if(params.get('board'))gate(board);
+else home();
+</script></body></html>
