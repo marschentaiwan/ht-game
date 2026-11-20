@@ -407,18 +407,19 @@ function hostRender(){if(!R)return;const st=STAGES[R.si];let main='';
   ${rv?`<div class="reveal">${q.v?`<span class="vtag">${q.v}</span>`:''}${q.c?`<span class="credit">真實案例 · ${q.c}</span>`:''}<p>${q.e}</p><p style="color:var(--g);font-family:'Bebas Neue';letter-spacing:.15em;font-size:20px;margin-top:10px">答對 ${R.lastGain?.c??0} / ${as.length} 位 · 顧客溫度 +${R.lastGain?.g??0}°${R.lastGain?.note?' · '+R.lastGain.note:''}</p></div>
    <button class="btn" style="max-width:420px;margin-top:18px" onclick="hNext()"><span>下一步 NEXT</span></button>`
   :`<div style="display:flex;gap:14px;align-items:center;margin-top:20px"><div class="bebas" id="clk" style="font-size:32px;color:var(--dk)"></div><button class="btn sm" onclick="hReveal()"><span>揭曉答案 REVEAL</span></button></div>`}`;}
- else if(R.phase==='race_pick'){main=`<div class="eyebrow">STAGE 04 · NEXT LEVEL 評估優化 · ŠKODA RACE</div><h2 class="qtext">🏁 Škoda 賽車：請在手機上選一台車！</h2>
+ else if(R.phase==='race_pick'){main=`<div class="eyebrow">STAGE 04 · NEXT LEVEL 評估優化 · ŠKODA RACE</div><h2 class="qtext">🏁 Škoda 賽車${(R.raceNo||1)>1?' · 第 '+R.raceNo+' 場':''}：請在手機上選一台車！</h2>
   <div class="card"><h3>比賽規則（${RACE_SEC} 秒）</h3><p>① <b>狂點「油門」</b>往前衝，點越快 <b>COMBO 越高（×2、×3）</b>。<br>② 手機跳出「<b>客戶時刻</b>」只有 <b>3 秒</b>：選對 Human Touch 做法 → <b>TURBO 加速</b>；選錯或太慢 → <b>車子故障停 3～5 秒</b>！<br>③ 賽道隨機發生事件：🌧️ 大雨、🐶 狗狗闖入、🎁 驚喜禮盒、🍵 薑母茶補給站、🛞 爆胎互助。<br>④ 📯 喇叭可以盡量按——不會變快，但很吵 😆<br>⑤ 前三名 +${RACE_BONUS.join('° / +')}°，完賽每人 +${RACE_FINISH_BONUS}°，還有 <b>最佳 Human Touch 獎、最熱心助人獎、喇叭大王、最佳耐心獎</b>！</p></div>
   <p style="margin-top:10px;color:rgba(10,31,24,.6)">🔊 請打開大螢幕音效</p>
   <div class="toolrow">${PLAYERS.map(p=>`<div class="tchip ${p.car?'used':''}">${esc(p.name)}：${p.car?carOf(p.car).name:'選車中…'}</div>`).join('')}</div>
   <button class="btn" style="max-width:420px;margin-top:22px" onclick="hRaceGo()"><span>開始比賽 START · 已選車 ${PLAYERS.filter(p=>p.car).length} / ${PLAYERS.length}</span></button>`;}
  else if(R.phase==='race'){if(HS.key!==R.raceStart)HS={key:R.raceStart};main=`<div class="eyebrow">STAGE 04 · ŠKODA RACE</div><div style="display:flex;justify-content:space-between;align-items:center;gap:16px"><div id="ticker" class="ticker">準備起跑…</div><div class="cd" id="rclk"></div></div>
   <div class="lights" id="lights"></div><div id="evb" class="evb"></div>${raceTrackHtml()}`;}
- else if(R.phase==='race_done'){const rk=(R.race&&R.race.rank)||[];const aw=(R.race&&R.race.awards)||[];main=`<div class="eyebrow">STAGE 04 · ŠKODA RACE · RESULT</div><h2 class="qtext">🏆 比賽結果</h2>
+ else if(R.phase==='race_done'){const rk=(R.race&&R.race.rank)||[];const aw=(R.race&&R.race.awards)||[];main=`<div class="eyebrow">STAGE 04 · ŠKODA RACE · RESULT</div><h2 class="qtext">🏆 比賽結果${(R.raceNo||1)>1?' · 第 '+R.raceNo+' 場':''}</h2>
   <div class="podium">${[1,0,2].filter(i=>rk[i]).map(i=>`<div style="padding-bottom:${[46,22,10][i]}px"><div class="r">${['🥇','🥈','🥉'][i]} ${i+1}</div>${carSVG(carOf(rk[i].car).c,150)}<div class="serif" style="font-size:20px;font-weight:700">${esc(rk[i].name)}</div><div class="lbl">${carOf(rk[i].car).name} · +${RACE_BONUS[i]}°</div></div>`).join('')}</div>
   ${aw.length?`<div class="awards">${aw.map(a=>`<div class="aw"><div class="ai">${a.ic}</div><div class="eyebrow">${a.t}</div><b>${esc(a.name)}</b>${a.v?`<div style="font-size:13px;color:rgba(10,31,24,.6)">${a.u||''} ${a.v}</div>`:''}</div>`).join('')}</div>`:''}
   <p style="text-align:center;margin-top:18px;font-size:18px">完賽 ${rk.filter(x=>x.fin).length} 位 · 團隊顧客溫度 <b>+${R.race?.bonus??0}°</b></p>
-  <button class="btn" style="max-width:420px;margin:22px auto 0;display:block" onclick="hFinal()"><span>開始拼圖 BUILD TOGETHER</span></button>`;}
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:22px"><button class="btn gold" style="max-width:340px" onclick="hRaceAgain()"><span>🔁 再賽車一次</span></button><button class="btn" style="max-width:340px" onclick="hFinal()"><span>開始拼圖 BUILD TOGETHER</span></button></div>
+  <p style="text-align:center;margin-top:10px;font-size:13px;color:rgba(10,31,24,.55)">再賽一次時，顧客溫度以最新一場的賽車加分為準，不會重複累加</p>`;}
  else if(R.phase==='final'){const ps=PLAYERS;main=`<div class="eyebrow">STAGE 04 · NEXT LEVEL 評估優化</div><h2 class="qtext">一人一塊，拼出我們的 Human Touch</h2><p>請每位夥伴在手機上寫下「我會留下來的一個日常習慣」。已完成 <b>${ps.filter(p=>p.habit).length}</b> / ${ps.length}</p>
   <div class="puzzle">${ps.map(p=>`<div class="pz ${p.habit?'got':''}">${p.habit?`<b>${esc(p.name)}</b>${esc(p.habit)}`:`🧩 ${esc(p.name)}`}</div>`).join('')}</div>
   <button class="btn" style="max-width:420px;margin-top:24px" onclick="hDone()"><span>完成拼圖 · 簽署 HUMAN TOUCH NEXT LEVEL 承諾</span></button>`;}
@@ -444,7 +445,8 @@ window.hReveal=async()=>{if(revealing||R.phase!=='question')return;revealing=tru
  const log=[...(R.log||[]),{k,n:as.length,c,g}];await upd({phase:'reveal',temp:R.temp+g,lastGain:{c,g,note:notes.join('、')},log});revealing=false;};
 window.hNext=()=>{const st=STAGES[R.si];if(R.qi+1<st.q.length)hQ(R.si,R.qi+1);else hStage(R.si+1);};
 window.hFinal=()=>upd({phase:'final',event:null});
-window.hRacePick=()=>{SFX.init();upd({phase:'race_pick',event:null});};
+window.hRacePick=()=>{SFX.init();upd({phase:'race_pick',event:null,raceNo:1});};
+window.hRaceAgain=()=>{SFX.init();upd({phase:'race_pick',event:null,raceNo:(R.raceNo||1)+1});};
 window.hRaceGo=()=>{SFX.init();raceEnding=false;const t=Date.now()+4000;
  const types=['rain','dog','gift','tea','flat'].sort(()=>Math.random()-.5).slice(0,3);
  const revs=types.map((ty,i)=>{const tg=PLAYERS[Math.floor(Math.random()*PLAYERS.length)];return{id:'e'+i+'_'+t,type:ty,at:[12000,27000,42000][i]+Math.floor(Math.random()*3000),target:tg?tg.id:'',tn:tg?tg.name:''};});
@@ -458,7 +460,7 @@ window.hRaceEnd=async()=>{if(raceEnding||R.phase!=='race')return;raceEnding=true
  top('ok','💚','最佳 Human Touch 獎','選對客戶時刻');top('help','🙌','最熱心助人獎','幫忙次數');top('honk','📯','喇叭大王','按喇叭');
  if(rk.length>=4){const z=rk[rk.length-1];awards.push({ic:'🐢',t:'最佳耐心獎',name:z.name,id:z.id});}
  rk.forEach(x=>{delete x.ok;delete x.help;delete x.honk;});
- await upd({phase:'race_done',race:{rank:rk,bonus,awards},temp:R.temp+bonus});};
+ await upd({phase:'race_done',race:{rank:rk,bonus,awards},temp:R.temp-((R.race&&R.race.bonus)||0)+bonus});};
 window.hDone=async()=>{if(!confirm('確認完成並記錄本場成績？'))return;
  const all=await getDocs(collection(db,ROOMS,RID,'answers'));const A=all.docs.map(d=>d.data());
  const players=PLAYERS.map(p=>{const mine=A.filter(a=>a.pid===p.id);const cor=mine.filter(a=>{const[si,qi]=a.k.split('_').map(Number);return STAGES[si].q[qi].a===a.c;}).length;return{name:p.name,role:p.role||'',answered:mine.length,correct:cor,habit:p.habit||''};});
@@ -568,7 +570,7 @@ function pRender(){const r=PR;if(!r)return;if(r.phase==='race'&&RS.key===r.raceS
   if(!rv&&mine!==undefined)b+=`<div class="wait" style="padding:18px"><span class="dot"></span> 已送出，等待夥伴作答…</div>`;
   if(rv)b+=`<div class="pcard"><div class="res">${mine===q.a?'🎉 答對了！':mine===undefined?'這題沒有作答':'💡 一起學習'}</div>${q.c?`<div class="bebas" style="color:#B57A10">真實案例 · ${q.c}</div>`:''}<p style="line-height:1.8;margin-top:6px">${q.e}</p></div>`;
   if(!rv&&st.able)b+=myTools.map(t=>r.toolUsed[t]?`<div class="toolcard" style="opacity:.55">${TOOLS[t].icon} ${TOOLS[t].name}${r.toolUsed[t]===k?'：本題已啟用！':'：已使用'}</div>`:`<button class="btn gold" style="margin-top:14px" onclick="pTool('${t}')"><span>${TOOLS[t].icon} 為全隊使用「${TOOLS[t].name}」</span></button><p style="font-size:12px;margin-top:4px;color:rgba(10,31,24,.65)">效果：${TOOLS[t].fx}${q.tool===t?'｜✨ 本題正是使用情境，額外 +'+TOOL_BONUS+'°':''}</p>`).join('');}
- else if(r.phase==='race_pick'){b=`<div class="pcard"><div class="eyebrow">ŠKODA RACE · 選車</div><h2 class="serif" style="margin:6px 0">選一台你的 Škoda</h2><p style="font-size:14px;line-height:1.7">狂點油門累積 COMBO！「客戶時刻」3 秒內選對 → TURBO；選錯或太慢 → 車子故障！小心狗狗、大雨、爆胎…還有喇叭可以按 📯</p></div>
+ else if(r.phase==='race_pick'){b=`<div class="pcard"><div class="eyebrow">ŠKODA RACE · 選車</div><h2 class="serif" style="margin:6px 0">${(r.raceNo||1)>1?'第 '+r.raceNo+' 場 · 可以換車！':'選一台你的 Škoda'}</h2><p style="font-size:14px;line-height:1.7">狂點油門累積 COMBO！「客戶時刻」3 秒內選對 → TURBO；選錯或太慢 → 車子故障！小心狗狗、大雨、爆胎…還有喇叭可以按 📯</p></div>
   <div class="cgrid">${CARS.map(c=>`<button class="cbtn ${ME.car===c.id?'on':''}" onclick="pCar('${c.id}')">${carSVG(c.c,90)}<b>${c.name}</b></button>`).join('')}</div>
   ${ME.car?`<div class="wait" style="padding:18px"><span class="dot"></span> 已選 ${carOf(ME.car).name}，等待主持人開始比賽…（手機請開聲音 🔊）</div>`:''}`;}
  else if(r.phase==='race'){if(RS.key!==r.raceStart)raceReset(r.raceStart);const c=carOf(ME.car);
