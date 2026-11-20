@@ -19,7 +19,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background:ra
 .hero .l2{display:block;color:var(--g)}
 .sub{font-size:17px;line-height:1.8;color:rgba(244,248,245,.8);max-width:540px;font-weight:300}
 .road{display:flex;margin-top:auto;padding-top:30px;border-top:1px solid rgba(120,250,174,.2)}
-.road div{flex:1;padding-right:10px}.road .n{font-family:'Bebas Neue';font-size:42px;color:var(--g);line-height:1}.road .t{font-size:12px;letter-spacing:.18em;color:rgba(244,248,245,.6)}
+.road div{flex:1;padding-right:10px}.road .zh{display:inline-block;color:var(--g);font-family:'Noto Serif TC',serif;font-size:15px;letter-spacing:.12em;font-weight:700;margin:2px 0}.road .n{font-family:'Bebas Neue';font-size:42px;color:var(--g);line-height:1}.road .t{font-size:12px;letter-spacing:.18em;color:rgba(244,248,245,.6)}
 .right{padding:56px 60px;display:flex;flex-direction:column;justify-content:center;position:relative}
 .right::before{content:'';position:absolute;top:56px;left:60px;width:60px;height:4px;background:var(--deep)}
 .ftitle{font-family:'Noto Serif TC',serif;font-weight:700;font-size:30px;margin:12px 0 8px}
@@ -110,6 +110,25 @@ tr.zero td{color:rgba(10,31,24,.4)}
 .gate input{background:transparent;border:none;border-bottom:1.5px solid var(--g);color:#fff;font-size:20px;padding:10px;text-align:center;outline:none;width:280px}
 .conn{position:fixed;right:14px;bottom:12px;z-index:50;font-family:'Bebas Neue';letter-spacing:.2em;font-size:11px;background:var(--deep);color:var(--g);padding:5px 10px}
 .conn.off{color:#FFB3B3}
+.zhbig{font-family:'Noto Serif TC',serif;font-weight:900;font-size:clamp(36px,4.5vw,64px);color:var(--dk);letter-spacing:.15em;margin-top:6px}
+.track{background:#2B2F2D;border:4px solid var(--deep);position:relative;padding:10px 70px 10px 10px;margin-top:16px;overflow:hidden}
+.track::after{content:'';position:absolute;right:58px;top:0;bottom:0;width:12px;background:repeating-linear-gradient(0deg,#fff 0 10px,#111 10px 20px)}
+.lane{position:relative;border-bottom:2px dashed rgba(255,255,255,.25)}
+.lane:last-child{border-bottom:none}
+.car{position:absolute;left:0;top:50%;transform:translateY(-50%);transition:left .7s linear;display:flex;flex-direction:column;align-items:flex-start}
+.car .nm{font-size:12px;color:#fff;white-space:nowrap;background:rgba(0,0,0,.45);padding:1px 6px;margin-bottom:1px}
+.cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.cbtn{background:#fff;border:2px solid rgba(10,31,24,.12);padding:10px 6px;text-align:center;font-family:inherit;cursor:pointer}
+.cbtn.on{border-color:var(--deep);background:rgba(120,250,174,.25)}
+.cbtn b{display:block;font-size:13px;margin-top:4px;color:var(--ink)}
+.gas{width:100%;height:42vh;max-height:340px;border:none;border-radius:50%;background:radial-gradient(circle at 50% 40%,var(--g),#2FBF77);color:var(--deep);font-family:'Bebas Neue',sans-serif;font-size:54px;letter-spacing:.15em;margin-top:16px;touch-action:manipulation;-webkit-user-select:none;user-select:none;box-shadow:0 10px 0 #1E8F57}
+.gas:active{transform:translateY(6px);box-shadow:0 4px 0 #1E8F57}
+.moment{position:fixed;left:12px;right:12px;bottom:14px;background:var(--deep);color:#fff;padding:16px;z-index:60;border-left:5px solid var(--accent);animation:fu .3s}
+.moment button{display:block;width:100%;margin-top:8px;padding:13px;font-size:16px;font-family:inherit;border:none;background:#fff;color:var(--ink)}
+.podium{display:flex;gap:16px;align-items:flex-end;justify-content:center;margin-top:24px}
+.podium div{background:var(--deep);color:#fff;text-align:center;padding:14px 18px;min-width:180px}
+.podium .r{font-family:'Bebas Neue';font-size:46px;color:var(--accent);line-height:1}
+.cd{font-family:'Bebas Neue';font-size:90px;color:var(--dk);text-align:center;line-height:1}
 @media(max-width:900px){.split,.host{grid-template-columns:1fr}.left{padding:30px 24px}.right{padding:40px 24px}.hmain{padding:22px}.kpis{grid-template-columns:1fr 1fr}.tgrid{grid-template-columns:1fr}}
 @media print{.noprint,.conn{display:none!important}body::before{display:none}.cert{box-shadow:none;margin:0}}
 </style></head><body>
@@ -180,6 +199,22 @@ const STAGES=[
  ]},
 {key:'NEXT LEVEL',no:'04',title:'評估優化',period:'2027 Q1',final:true,story:'HT Index 半年期評估、第二輪神秘客、2026 優秀案例分享大會——Next Level 不是一個人做到，而是整個據點一起把好行為變成日常。請每位夥伴在手機上寫下一個「我會留下來的習慣」，拼出我們的 Human Touch。',q:[]}
 ];
+const CARS=[
+ {id:'fabia',name:'Fabia',c:'#E63946'},{id:'scala',name:'Scala',c:'#F4A261'},{id:'kamiq',name:'Kamiq',c:'#2A9D8F'},
+ {id:'karoq',name:'Karoq',c:'#457B9D'},{id:'kodiaq',name:'Kodiaq',c:'#264653'},{id:'octavia',name:'Octavia',c:'#8D99AE'},
+ {id:'superb',name:'Superb',c:'#1D1D1D'},{id:'enyaq',name:'Enyaq',c:'#78FAAE'},{id:'elroq',name:'Elroq',c:'#9B5DE5'}
+];
+const RACE_SEC=40,RACE_GOAL=120,RACE_BONUS=[30,20,10],RACE_FINISH_BONUS=5;
+const MOMENTS=[
+ {s:'雨天，客戶走到展間門口',ok:'先詢問，再幫忙撐傘',bad:'直接把傘塞給他'},
+ {s:'交車時，客戶全家都在場',ok:'幫全家拍一張合照',bad:'催客戶快點簽名'},
+ {s:'客戶在客休室等了很久',ok:'主動更新維修進度',bad:'等他來問再說'},
+ {s:'客戶一直看手錶，很焦急',ok:'先問他最擔心什麼',bad:'請他先坐著等'},
+ {s:'新車交車完成',ok:'當面介紹售服聯絡人',bad:'請他自己上網查'},
+ {s:'高里程車回廠大修',ok:'適時引薦銷售顧問',bad:'當場推銷新車價格'},
+ {s:'帶小小孩的家庭來看車',ok:'準備兒童小角落',bad:'請家長看好小孩'},
+ {s:'客戶坐下準備洽談',ok:'擺上照片桌牌 2.0',bad:'手寫電話在便條紙'}
+];
 const HABIT_SUG=['桌上擺照片桌牌 2.0','交車時當面介紹售服聯絡人','高里程時引薦銷售顧問','試乘前說明路線與體驗重點','雨天先詢問再撐傘','離店前整理客戶最在意的 3 個重點','交車後第 3／7／30 天主動關心','先問客戶最擔心什麼','主動更新維修進度','晨會分享一個顧客故事'];
 
 </script>
@@ -208,7 +243,7 @@ function applyShuffle(code){if(shuffled)return;shuffled=true;let seed=[...code].
  STAGES.forEach(s=>s.q.forEach(q=>{const p=q.o.map((_,i)=>i);for(let i=p.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[p[i],p[j]]=[p[j],p[i]];}q.o=p.map(i=>q.o[i]);q.a=p.indexOf(q.a);}));}
 const regionOf=o=>(OUTLET_GROUPS.find(g=>g.items.includes(o))||{region:'其他 · OTHER'}).region;
 const outletOptions=()=>OUTLET_GROUPS.map(g=>`<optgroup label="${g.region}">${g.items.map(i=>`<option>${i}</option>`).join('')}</optgroup>`).join('');
-const roadHtml=()=>`<div class="road">${STAGES.map(s=>`<div><div class="n">${s.no}</div><div class="t">${s.key}<br>${s.period}</div></div>`).join('')}</div>`;
+const roadHtml=()=>`<div class="road">${STAGES.map(s=>`<div><div class="n">${s.no}</div><div class="t">${s.key}<br><span class="zh">${s.title}</span><br>${s.period}</div></div>`).join('')}</div>`;
 function gate(key,pwd,label,next){if(sessionStorage.getItem(key)==='1')return next();
  H(`<div class="gate"><img class="logo" src="${LOGO}"><div class="bebas" style="color:var(--g)">${label}</div><input type="password" id="pw" placeholder="存取密碼"><button class="btn sm gold" id="go"><span>ENTER</span></button><div id="er" style="color:#FFB3B3;font-size:13px"></div><a href="?" style="color:rgba(255,255,255,.5);font-size:13px">返回首頁</a></div>`);
  const f=()=>{if(document.getElementById('pw').value.trim()===pwd){sessionStorage.setItem(key,'1');next();}else document.getElementById('er').textContent='密碼不正確';};
@@ -264,20 +299,35 @@ function side(){const url=BASE+'?room='+RID;const k=qkey(R.si,R.qi);const answer
  <div><div class="lbl">團隊顧客溫度 CUSTOMER WARMTH</div><div class="big">${R.temp}°</div><div class="meter"><i style="width:${pct}%"></i></div></div>
  <div><div class="lbl">夥伴 ${PLAYERS.length} 位${R.phase==='question'?` · 已作答 ${answered.size}`:''}</div><div class="plist" style="margin-top:8px">${PLAYERS.map(p=>`<span class="${answered.has(p.id)||(R.phase==='final'&&p.habit)?'a':''}">${esc(p.name)}${holders.includes(p.id)?' 🎫':''}</span>`).join('')||'<span>等待夥伴加入…</span>'}</div></div>
  <div style="margin-top:auto;font-size:11px;color:rgba(255,255,255,.4);word-break:break-all">${url}</div></div>`;}
+function carSVG(c,w){return `<svg width="${w}" height="${Math.round(w*.42)}" viewBox="0 0 100 42"><path d="M6 30 L8 20 Q10 16 18 15 L32 14 Q40 4 56 4 L70 5 Q80 7 86 15 L94 18 Q98 20 98 26 L98 30 Z" fill="${c}" stroke="#111" stroke-width="1.5"/><path d="M36 14 Q43 7 55 7 L66 8 Q73 9 78 14 Z" fill="#CFE9F5" stroke="#111" stroke-width="1"/><line x1="56" y1="7" x2="56" y2="14" stroke="#111" stroke-width="1.2"/><circle cx="24" cy="31" r="8" fill="#111"/><circle cx="24" cy="31" r="3.5" fill="#bbb"/><circle cx="78" cy="31" r="8" fill="#111"/><circle cx="78" cy="31" r="3.5" fill="#bbb"/></svg>`;}
+const carOf=id=>CARS.find(c=>c.id===id)||CARS[0];
+let raceI=null,raceEnding=false;
+function raceTrackHtml(){const ps=PLAYERS;const h=Math.max(34,Math.min(64,Math.floor(440/Math.max(ps.length,1))));
+ return `<div class="track" id="track">${ps.map(p=>{const c=carOf(p.car);return `<div class="lane" style="height:${h}px"><div class="car" id="car_${p.id}" style="left:0%"><span class="nm">${esc(p.name)} · ${c.name}</span>${carSVG(c.c,Math.round(h*1.5))}</div></div>`;}).join('')}</div>`;}
+function racePos(p){return p.rkey===R.raceStart?Math.min(p.rpos||0,RACE_GOAL):0;}
+function updateTrack(){const tr=document.getElementById('track');if(!tr)return;const w=tr.clientWidth-90;
+ PLAYERS.forEach(p=>{const el=document.getElementById('car_'+p.id);if(el)el.style.left=Math.round(racePos(p)/RACE_GOAL*Math.max(w-el.offsetWidth,0))+'px';});}
+function raceLoop(){clearInterval(raceI);if(R.phase!=='race')return;raceI=setInterval(()=>{const el=document.getElementById('rclk');const now=Date.now();
+ if(now<R.raceStart){if(el)el.textContent=Math.ceil((R.raceStart-now)/1000);return;}
+ const left=Math.max(0,Math.ceil((R.raceEnd-now)/1000));if(el)el.textContent=left>0?'GO! '+left+'s':'FINISH';
+ const allIn=PLAYERS.length&&PLAYERS.every(p=>p.rkey===R.raceStart&&p.rfin);
+ if(now>=R.raceEnd||allIn)hRaceEnd();},250);}
 function hostRender(){if(!R)return;const st=STAGES[R.si];let main='';
+ if(R.phase==='race'&&document.getElementById('track')&&document.getElementById('track').children.length===PLAYERS.length){updateTrack();return;}
+ if(R.phase!=='race')clearInterval(raceI);
  const prog=`<div class="prog">${STAGES.map((s,i)=>`<div class="${i<R.si?'done':i===R.si&&R.phase!=='lobby'?'on':''}"></div>`).join('')}</div>`;
  const head=`<div class="hhead"><div class="eyebrow">HUMAN TOUCH · NEXT LEVEL CHALLENGE</div><div style="font-size:13px;color:rgba(10,31,24,.6)">主持人 <b>${esc(R.host||'—')}</b></div></div>`;
  if(R.phase==='lobby'){main=`<div class="stagebig">READY</div><h2 class="qtext">歡迎 ${esc(R.outlet)} 的夥伴！<br>請用手機掃描右側 QR Code 加入挑戰。</h2>
   <div class="card"><h3>今天的遊戲規則</h3><p>① 全隊共用一個「顧客溫度」，每位夥伴答對都會為團隊加溫（每人 +10°）。<br>② 共 ${FLAT.length} 題，多數來自夥伴們的 <b>最佳案例</b> 與 <b>行為創想</b>，每題 4 個選項，都很像——請先和身邊夥伴討論，再各自在手機上作答。<br>③ 第 3 關開始，3 位夥伴會拿到「HT 工具包」，關卡開始前會詳細說明怎麼用。<br>④ 最後每人寫下一個要留下來的習慣，一起拼出我們的 Human Touch。</p></div>
   <button class="btn" style="max-width:420px;margin-top:24px" ${PLAYERS.length?'':'disabled'} onclick="hStage(0)"><span>開始挑戰 START · ${PLAYERS.length} 位夥伴</span></button>`;}
- else if(R.phase==='intro'){main=`<div class="eyebrow">STAGE ${st.no} · ${st.period}</div><div class="stagebig">${st.key}</div><h2 class="qtext">第 ${+st.no} 關｜${st.title}</h2><p style="font-size:18px;line-height:1.9;max-width:900px">${st.story}</p>
-  ${st.able?`<button class="btn gold" style="max-width:420px;margin-top:24px" onclick="hTools()"><span>🎫 先認識三個 HT 工具包</span></button>`:`<button class="btn" style="max-width:420px;margin-top:28px" onclick="${st.final?'hFinal()':'hQ('+R.si+',0)'}"><span>${st.final?'開始拼圖 BUILD TOGETHER':'進入第 1 題 GO'}</span></button>`}`;}
- else if(R.phase==='tools'){main=`<div class="eyebrow">STAGE 03 · HT TOOLS</div><h2 class="qtext" style="margin-bottom:4px">Human Touch 工具包：讓客戶記得你、找得到對的人</h2><p style="color:rgba(10,31,24,.65)">從洽談、交車到回廠保養，三張「QR Code 聯絡卡」串起完整客戶旅程。</p>
+ else if(R.phase==='intro'){main=`<div class="eyebrow">STAGE ${st.no} · ${st.period}</div><div class="stagebig">${st.key}</div><div class="zhbig">${st.title}</div><h2 class="qtext">第 ${+st.no} 關｜${st.key} ${st.title}</h2><p style="font-size:18px;line-height:1.9;max-width:900px">${st.story}</p>
+  ${st.able?`<button class="btn gold" style="max-width:420px;margin-top:24px" onclick="hTools()"><span>🎫 先認識三個 HT 工具包</span></button>`:`<button class="btn" style="max-width:420px;margin-top:28px" onclick="${st.final?'hRacePick()':'hQ('+R.si+',0)'}"><span>${st.final?'🏁 先來一場 ŠKODA 賽車！':'進入第 1 題 GO'}</span></button>${st.final?`<button class="btn ghost" style="max-width:420px" onclick="hFinal()"><span>略過賽車，直接拼圖</span></button>`:''}`}`;}
+ else if(R.phase==='tools'){main=`<div class="eyebrow">STAGE 03 · ABLE 能力 · HT TOOLS</div><h2 class="qtext" style="margin-bottom:4px">Human Touch 工具包：讓客戶記得你、找得到對的人</h2><p style="color:rgba(10,31,24,.65)">從洽談、交車到回廠保養，三張「QR Code 聯絡卡」串起完整客戶旅程。</p>
   ${toolCards(t=>pname(R.tools[t]))}${HOWTO}
   <button class="btn" style="max-width:420px;margin-top:22px" onclick="hQ(${R.si},0)"><span>了解了，進入第 1 題 GO</span></button>`;}
  else if(R.phase==='question'||R.phase==='reveal'){const q=st.q[R.qi],k=qkey(R.si,R.qi),as=ANS.filter(a=>a.k===k),rv=R.phase==='reveal';
   const cnt=q.o.map((_,i)=>as.filter(a=>a.c===i).length);
-  main=`<div class="eyebrow">STAGE ${st.no} · ${st.key} · 第 ${R.qi+1} / ${st.q.length} 題</div>
+  main=`<div class="eyebrow">STAGE ${st.no} · ${st.key} ${st.title} · 第 ${R.qi+1} / ${st.q.length} 題</div>
   ${R.event?`<div class="event" style="margin-top:10px">⚡ <b>現場狀況：${R.event.t}</b>　${R.event.d}</div>`:''}
   ${q.tool&&!rv?`<div class="toolhint">🎫 這題是 <b>${TOOLS[q.tool].name}</b> 的真實使用情境！持有人 <b>${esc(pname(R.tools[q.tool]))}</b>${R.toolUsed[q.tool]?(R.toolUsed[q.tool]===k?'：已在本題使用 ✔ 用對時機 +'+TOOL_BONUS+'°':'：已在前面用掉了'):'：現在使用，額外 +'+TOOL_BONUS+'°'}</div>`:''}
   <div class="qtext">${q.s}</div>
@@ -286,12 +336,21 @@ function hostRender(){if(!R)return;const st=STAGES[R.si];let main='';
   ${rv?`<div class="reveal">${q.v?`<span class="vtag">${q.v}</span>`:''}${q.c?`<span class="credit">真實案例 · ${q.c}</span>`:''}<p>${q.e}</p><p style="color:var(--g);font-family:'Bebas Neue';letter-spacing:.15em;font-size:20px;margin-top:10px">答對 ${R.lastGain?.c??0} / ${as.length} 位 · 顧客溫度 +${R.lastGain?.g??0}°${R.lastGain?.note?' · '+R.lastGain.note:''}</p></div>
    <button class="btn" style="max-width:420px;margin-top:18px" onclick="hNext()"><span>下一步 NEXT</span></button>`
   :`<div style="display:flex;gap:14px;align-items:center;margin-top:20px"><div class="bebas" id="clk" style="font-size:32px;color:var(--dk)"></div><button class="btn sm" onclick="hReveal()"><span>揭曉答案 REVEAL</span></button></div>`}`;}
- else if(R.phase==='final'){const ps=PLAYERS;main=`<div class="eyebrow">STAGE 04 · NEXT LEVEL</div><h2 class="qtext">一人一塊，拼出我們的 Human Touch</h2><p>請每位夥伴在手機上寫下「我會留下來的一個日常習慣」。已完成 <b>${ps.filter(p=>p.habit).length}</b> / ${ps.length}</p>
+ else if(R.phase==='race_pick'){main=`<div class="eyebrow">STAGE 04 · NEXT LEVEL 評估優化 · ŠKODA RACE</div><h2 class="qtext">🏁 Škoda 賽車：請在手機上選一台車！</h2>
+  <div class="card"><h3>比賽規則</h3><p>① 比賽 ${RACE_SEC} 秒，在手機上<b>連續點按「油門」</b>往前衝，先抵達終點的獲勝。<br>② 途中手機會跳出「<b>客戶時刻</b>」——快速選出 Human Touch 的做法就能 <b>加速</b>，選錯會減速。<br>③ 前三名為團隊顧客溫度加 <b>+${RACE_BONUS.join('° / +')}°</b>，每位完賽夥伴再加 <b>+${RACE_FINISH_BONUS}°</b>。</p></div>
+  <div class="toolrow">${PLAYERS.map(p=>`<div class="tchip ${p.car?'used':''}">${esc(p.name)}：${p.car?carOf(p.car).name:'選車中…'}</div>`).join('')}</div>
+  <button class="btn" style="max-width:420px;margin-top:22px" onclick="hRaceGo()"><span>開始比賽 START · 已選車 ${PLAYERS.filter(p=>p.car).length} / ${PLAYERS.length}</span></button>`;}
+ else if(R.phase==='race'){main=`<div class="eyebrow">STAGE 04 · ŠKODA RACE</div><div style="display:flex;justify-content:space-between;align-items:flex-end"><h2 class="qtext" style="margin:6px 0">狂點油門，用 Human Touch 加速！</h2><div class="cd" id="rclk"></div></div>${raceTrackHtml()}`;}
+ else if(R.phase==='race_done'){const rk=(R.race&&R.race.rank)||[];main=`<div class="eyebrow">STAGE 04 · ŠKODA RACE · RESULT</div><h2 class="qtext">🏆 比賽結果</h2>
+  <div class="podium">${[1,0,2].filter(i=>rk[i]).map(i=>`<div style="padding-bottom:${[40,20,10][i]}px"><div class="r">${i+1}</div>${carSVG(carOf(rk[i].car).c,150)}<div class="serif" style="font-size:20px;font-weight:700">${esc(rk[i].name)}</div><div class="lbl">${carOf(rk[i].car).name} · +${RACE_BONUS[i]}°</div></div>`).join('')}</div>
+  <p style="text-align:center;margin-top:18px;font-size:18px">完賽 ${rk.filter(x=>x.fin).length} 位 · 團隊顧客溫度 <b>+${R.race?.bonus??0}°</b></p>
+  <button class="btn" style="max-width:420px;margin:22px auto 0;display:block" onclick="hFinal()"><span>開始拼圖 BUILD TOGETHER</span></button>`;}
+ else if(R.phase==='final'){const ps=PLAYERS;main=`<div class="eyebrow">STAGE 04 · NEXT LEVEL 評估優化</div><h2 class="qtext">一人一塊，拼出我們的 Human Touch</h2><p>請每位夥伴在手機上寫下「我會留下來的一個日常習慣」。已完成 <b>${ps.filter(p=>p.habit).length}</b> / ${ps.length}</p>
   <div class="puzzle">${ps.map(p=>`<div class="pz ${p.habit?'got':''}">${p.habit?`<b>${esc(p.name)}</b>${esc(p.habit)}`:`🧩 ${esc(p.name)}`}</div>`).join('')}</div>
   <button class="btn" style="max-width:420px;margin-top:24px" onclick="hDone()"><span>完成拼圖 · 簽署 HUMAN TOUCH NEXT LEVEL 承諾</span></button>`;}
  else if(R.phase==='done'){return certView();}
  app.innerHTML=`<div class="host"><div class="hmain">${head}${prog}${main}</div>${side()}</div>`;
- drawQR(document.getElementById('qr'),BASE+'?room='+RID);tick();}
+ drawQR(document.getElementById('qr'),BASE+'?room='+RID);tick();if(R.phase==='race'){updateTrack();raceLoop();}}
 function tick(){clearInterval(timerI);if(R.phase!=='question')return;const f=()=>{const el=document.getElementById('clk');if(!el)return;const t=Math.max(0,Math.ceil((R.deadline-Date.now())/1000));el.textContent=t>0?'討論倒數 '+t+'s':'⏰ TIME UP';if(t<=0)clearInterval(timerI);};f();timerI=setInterval(f,500);}
 function maybeAuto(){if(!R||R.phase!=='question')return;const k=qkey(R.si,R.qi);const n=new Set(ANS.filter(a=>a.k===k).map(a=>a.pid)).size;if(PLAYERS.length&&n>=PLAYERS.length)setTimeout(()=>{if(R.phase==='question'&&qkey(R.si,R.qi)===k)hReveal();},1500);}
 window.hStage=async si=>{const o={phase:'intro',si,qi:0,event:null,hint:null};
@@ -311,6 +370,13 @@ window.hReveal=async()=>{if(revealing||R.phase!=='question')return;revealing=tru
  const log=[...(R.log||[]),{k,n:as.length,c,g}];await upd({phase:'reveal',temp:R.temp+g,lastGain:{c,g,note:notes.join('、')},log});revealing=false;};
 window.hNext=()=>{const st=STAGES[R.si];if(R.qi+1<st.q.length)hQ(R.si,R.qi+1);else hStage(R.si+1);};
 window.hFinal=()=>upd({phase:'final',event:null});
+window.hRacePick=()=>upd({phase:'race_pick',event:null});
+window.hRaceGo=()=>{raceEnding=false;const t=Date.now()+4000;upd({phase:'race',raceStart:t,raceEnd:t+RACE_SEC*1000});};
+window.hRaceEnd=async()=>{if(raceEnding||R.phase!=='race')return;raceEnding=true;clearInterval(raceI);
+ const rk=PLAYERS.map(p=>({id:p.id,name:p.name,car:p.car||'fabia',pos:racePos(p),fin:(p.rkey===R.raceStart&&p.rfin)?p.rfin:0}))
+  .sort((a,b)=>(a.fin&&b.fin)?a.fin-b.fin:(a.fin?-1:b.fin?1:b.pos-a.pos));
+ let bonus=0;rk.forEach((x,i)=>{if(i<3&&x.pos>0)bonus+=RACE_BONUS[i];if(x.fin)bonus+=RACE_FINISH_BONUS;});
+ await upd({phase:'race_done',race:{rank:rk,bonus},temp:R.temp+bonus});};
 window.hDone=async()=>{if(!confirm('確認完成並記錄本場成績？'))return;
  const all=await getDocs(collection(db,ROOMS,RID,'answers'));const A=all.docs.map(d=>d.data());
  const players=PLAYERS.map(p=>{const mine=A.filter(a=>a.pid===p.id);const cor=mine.filter(a=>{const[si,qi]=a.k.split('_').map(Number);return STAGES[si].q[qi].a===a.c;}).length;return{name:p.name,role:p.role||'',answered:mine.length,correct:cor,habit:p.habit||''};});
@@ -348,6 +414,30 @@ async function player(code){applyShuffle(code);
 function pListen(code){RID=code;onSnapshot(doc(db,ROOMS,code),s=>{PR=s.data();pRender();});
  onSnapshot(doc(db,ROOMS,code,'players',ME.id),s=>{if(s.exists())ME={id:ME.id,...s.data()};});}
 let ptimer=null;
+const RS={key:null,pos:0,sent:-1,fin:0,mom:null,momAt:0,wI:null,used:[]};
+function raceReset(k){RS.key=k;RS.pos=0;RS.sent=-1;RS.fin=0;RS.mom=null;RS.momAt=0;RS.used=[];}
+function raceSend(){if(!PR||PR.phase!=='race'||RS.key!==PR.raceStart)return;if(RS.pos===RS.sent&&!RS.fin)return;RS.sent=RS.pos;
+ updateDoc(doc(db,ROOMS,RID,'players',ME.id),{rkey:RS.key,rpos:RS.pos,rfin:RS.fin||0}).catch(()=>{});}
+function raceBar(){const b=document.getElementById('rbar');if(b)b.style.width=Math.min(100,RS.pos/RACE_GOAL*100)+'%';const t=document.getElementById('rtxt');if(t)t.textContent=RS.fin?'🏁 完賽！看大螢幕':Math.round(RS.pos/RACE_GOAL*100)+'%';}
+function raceAdd(n){if(RS.fin||Date.now()<PR.raceStart||Date.now()>PR.raceEnd)return;RS.pos=Math.max(0,RS.pos+n);if(RS.pos>=RACE_GOAL){RS.pos=RACE_GOAL;RS.fin=Date.now()-PR.raceStart;raceSend();const g=document.getElementById('gasb');if(g)g.disabled=true;}raceBar();}
+window.pGas=e=>{if(e)e.preventDefault();raceAdd(1);};
+function showMoment(){if(RS.fin||RS.mom)return;const pool=MOMENTS.filter((_,i)=>!RS.used.includes(i));const i=MOMENTS.indexOf(pool[Math.floor(Math.random()*pool.length)]);if(i<0)return;RS.used.push(i);
+ const m=MOMENTS[i];const okFirst=Math.random()<.5;RS.mom=setTimeout(()=>{closeMoment();},4500);
+ const box=document.createElement('div');box.className='moment';box.id='moment';
+ box.innerHTML=`<div class="bebas" style="color:var(--accent)">客戶時刻 · CUSTOMER MOMENT</div><div class="serif" style="font-size:18px;font-weight:700;margin-top:4px">${m.s}</div>`+
+  (okFirst?[['ok',m.ok],['bad',m.bad]]:[['bad',m.bad],['ok',m.ok]]).map(([k,t])=>`<button onpointerdown="pMoment('${k}',event)">${t}</button>`).join('');
+ document.body.appendChild(box);}
+function closeMoment(){clearTimeout(RS.mom);RS.mom=null;const b=document.getElementById('moment');if(b)b.remove();}
+window.pMoment=(k,e)=>{if(e)e.preventDefault();closeMoment();raceAdd(k==='ok'?12:-6);const t=document.getElementById('rmsg');if(t){t.textContent=k==='ok'?'✨ Human Touch 加速 +12！':'💡 減速 -6，下次先想客戶';setTimeout(()=>{if(t)t.textContent='';},1600);}};
+window.pCar=async id=>{ME.car=id;pRender();await updateDoc(doc(db,ROOMS,RID,'players',ME.id),{car:id});};
+function raceTick(){clearInterval(RS.wI);RS.wI=setInterval(()=>{if(!PR||PR.phase!=='race'){clearInterval(RS.wI);closeMoment();return;}
+ const now=Date.now(),el=document.getElementById('pcd');
+ if(now<PR.raceStart){if(el)el.textContent=Math.ceil((PR.raceStart-now)/1000);return;}
+ const left=Math.max(0,Math.ceil((PR.raceEnd-now)/1000));if(el)el.textContent=left>0?left+'s':'FINISH';
+ if(!RS.momAt)RS.momAt=PR.raceStart+5000+Math.random()*3000;
+ if(now>=RS.momAt&&now<PR.raceEnd-3000){showMoment();RS.momAt=now+7000+Math.random()*3000;}
+ if(now>=PR.raceEnd){const g=document.getElementById('gasb');if(g)g.disabled=true;closeMoment();}
+ raceSend();},600);}
 function myToolCard(t){const v=TOOLS[t];return `<div class="toolcard"><h4>${v.icon} 你拿到 HT 工具包：${v.name}</h4>
  <div><b>現場怎麼用：</b>${v.real}</div><div><b>遊戲效果：</b>${v.fxLong}</div>
  <div style="margin-top:6px"><b>怎麼用：</b>題目進行中，手機下方會出現金色按鈕，按下即為<b>全隊</b>啟用，只能用一次。看到題目標示「🎫 ${v.name}」時使用，額外 <b>+${TOOL_BONUS}° 用對時機</b>！</div></div>`;}
@@ -358,15 +448,26 @@ function pRender(){const r=PR;if(!r)return;const st=STAGES[r.si];const top=`<div
  else if(r.phase==='tools')b=`${myTools.length?myTools.map(myToolCard).join(''):`<div class="pcard"><div class="eyebrow">HT TOOLS</div><p style="line-height:1.7;margin-top:6px">這次工具包沒有發到你手上，但你可以和持有人一起討論：<b>哪一題用最划算？</b></p></div>`}
   ${Object.values(TOOLS).map(v=>`<div class="mini"><b>${v.icon} ${v.name}</b>（${v.stage}）<br>${v.real}<br>🎮 ${v.fx}</div>`).join('')}`;
  else if(r.phase==='question'||r.phase==='reveal'){const q=st.q[r.qi],k=qkey(r.si,r.qi),mine=myAns[k],rv=r.phase==='reveal';
-  b=`<div class="pcard"><div class="eyebrow">${st.key} · Q${r.qi+1}/${st.q.length}</div>${r.event?`<div class="event" style="margin:10px 0 0;font-size:13px">⚡ ${r.event.t}：${r.event.d}</div>`:''}${q.tool&&!rv?`<div class="toolhint" style="font-size:13px">🎫 本題對應「${TOOLS[q.tool].name}」</div>`:''}<p class="serif" style="font-size:17px;font-weight:700;line-height:1.6;margin-top:10px">${q.s}</p><div id="pclk" class="bebas" style="color:var(--dk);margin-top:6px"></div></div>
+  b=`<div class="pcard"><div class="eyebrow">${st.key} ${st.title} · Q${r.qi+1}/${st.q.length}</div>${r.event?`<div class="event" style="margin:10px 0 0;font-size:13px">⚡ ${r.event.t}：${r.event.d}</div>`:''}${q.tool&&!rv?`<div class="toolhint" style="font-size:13px">🎫 本題對應「${TOOLS[q.tool].name}」</div>`:''}<p class="serif" style="font-size:17px;font-weight:700;line-height:1.6;margin-top:10px">${q.s}</p><div id="pclk" class="bebas" style="color:var(--dk);margin-top:6px"></div></div>
   <div class="opts" style="margin-top:12px">${q.o.map((o,i)=>{const cut=r.hint&&r.hint.k===k&&r.hint.cut===i;return `<button class="opt ${rv?(i===q.a?'ok':(mine===i?'no':'')):(mine===i?'sel':'')} ${cut?'cut':''}" ${rv||mine!==undefined||cut?'disabled':''} onclick="pAns(${i})"><span class="k">${K[i]}</span><span style="font-size:15px">${o}</span></button>`;}).join('')}</div>`;
   if(!rv&&mine!==undefined)b+=`<div class="wait" style="padding:18px"><span class="dot"></span> 已送出，等待夥伴作答…</div>`;
   if(rv)b+=`<div class="pcard"><div class="res">${mine===q.a?'🎉 答對了！':mine===undefined?'這題沒有作答':'💡 一起學習'}</div>${q.c?`<div class="bebas" style="color:#B57A10">真實案例 · ${q.c}</div>`:''}<p style="line-height:1.8;margin-top:6px">${q.e}</p></div>`;
   if(!rv&&st.able)b+=myTools.map(t=>r.toolUsed[t]?`<div class="toolcard" style="opacity:.55">${TOOLS[t].icon} ${TOOLS[t].name}${r.toolUsed[t]===k?'：本題已啟用！':'：已使用'}</div>`:`<button class="btn gold" style="margin-top:14px" onclick="pTool('${t}')"><span>${TOOLS[t].icon} 為全隊使用「${TOOLS[t].name}」</span></button><p style="font-size:12px;margin-top:4px;color:rgba(10,31,24,.65)">效果：${TOOLS[t].fx}${q.tool===t?'｜✨ 本題正是使用情境，額外 +'+TOOL_BONUS+'°':''}</p>`).join('');}
+ else if(r.phase==='race_pick'){b=`<div class="pcard"><div class="eyebrow">ŠKODA RACE · 選車</div><h2 class="serif" style="margin:6px 0">選一台你的 Škoda</h2><p style="font-size:14px;line-height:1.7">比賽開始後狂點油門！途中跳出「客戶時刻」時，選 Human Touch 的做法就能加速。</p></div>
+  <div class="cgrid">${CARS.map(c=>`<button class="cbtn ${ME.car===c.id?'on':''}" onclick="pCar('${c.id}')">${carSVG(c.c,90)}<b>${c.name}</b></button>`).join('')}</div>
+  ${ME.car?`<div class="wait" style="padding:18px"><span class="dot"></span> 已選 ${carOf(ME.car).name}，等待主持人開始比賽…</div>`:''}`;}
+ else if(r.phase==='race'){if(RS.key!==r.raceStart)raceReset(r.raceStart);const c=carOf(ME.car);
+  b=`<div class="pcard" style="text-align:center"><div style="display:flex;justify-content:space-between;align-items:center">${carSVG(c.c,90)}<div class="cd" id="pcd" style="font-size:54px"></div></div>
+  <div style="background:rgba(10,31,24,.1);height:14px;margin-top:8px;position:relative"><i id="rbar" style="position:absolute;left:0;top:0;bottom:0;background:var(--g);width:0"></i></div>
+  <div id="rtxt" class="bebas" style="margin-top:6px"></div><div id="rmsg" style="min-height:22px;font-weight:700;color:#B57A10"></div></div>
+  <button class="gas" id="gasb" onpointerdown="pGas(event)" ${RS.fin?'disabled':''}>GAS 油門</button>`;}
+ else if(r.phase==='race_done'){const rk=(r.race&&r.race.rank)||[];const my=rk.findIndex(x=>x.id===ME.id);
+  b=`<div class="pcard" style="text-align:center"><div class="eyebrow">ŠKODA RACE · RESULT</div><div class="res">${my>=0&&my<3?['🥇','🥈','🥉'][my]+' 第 '+(my+1)+' 名！':my>=0?'第 '+(my+1)+' 名 · 辛苦了！':'比賽結束'}</div><p>團隊顧客溫度 +${r.race?.bonus??0}°</p><p style="margin-top:8px">接下來一起拼出我們的 Human Touch 🧩</p></div>`;}
  else if(r.phase==='final'){b=ME.habit?`<div class="pcard"><div class="eyebrow">YOUR PIECE</div><h2 class="serif" style="margin:8px 0">🧩 ${esc(ME.habit)}</h2><p>已放入團隊拼圖，看看大螢幕！</p></div>`:
-  `<div class="pcard"><div class="eyebrow">STAGE 04 · NEXT LEVEL</div><h2 class="serif" style="margin:8px 0">我會留下來的一個日常習慣</h2><div class="field"><input id="hb" list="sg" placeholder="輸入或選擇建議"><datalist id="sg">${HABIT_SUG.map(s=>`<option value="${s}">`).join('')}</datalist></div><button class="btn" onclick="pHabit()"><span>放入拼圖 🧩</span></button></div>`;}
+  `<div class="pcard"><div class="eyebrow">STAGE 04 · NEXT LEVEL 評估優化</div><h2 class="serif" style="margin:8px 0">我會留下來的一個日常習慣</h2><div class="field"><input id="hb" list="sg" placeholder="輸入或選擇建議"><datalist id="sg">${HABIT_SUG.map(s=>`<option value="${s}">`).join('')}</datalist></div><button class="btn" onclick="pHabit()"><span>放入拼圖 🧩</span></button></div>`;}
  else if(r.phase==='done')b=`<div class="pcard" style="text-align:center"><div class="eyebrow">COMPLETED</div><h2 class="serif" style="margin:10px 0">恭喜 ${esc(r.outlet)}！</h2><p>團隊答對率 <b>${r.rate}%</b>｜顧客溫度 <b>${r.temp}°</b></p><p style="margin-top:10px">${levelOf(r.rate)}</p><p style="margin-top:14px;font-style:italic">From Ideas to Habits</p></div>`;
  app.innerHTML=top+'<div class="phone fade">'+b+'</div>';
+ if(r.phase==='race'){raceBar();raceTick();}else{clearInterval(RS.wI);closeMoment();}
  if(r.phase==='question'){const f=()=>{const el=document.getElementById('pclk');if(!el)return;const t=Math.max(0,Math.ceil((r.deadline-Date.now())/1000));el.textContent=t>0?'討論倒數 '+t+'s':'TIME UP · 請盡快作答';};f();ptimer=setInterval(f,500);}}
 window.pAns=async i=>{const k=qkey(PR.si,PR.qi);if(myAns[k]!==undefined)return;myAns[k]=i;pRender();
  await setDoc(doc(db,ROOMS,RID,'answers',k+'__'+ME.id),{k,pid:ME.id,c:i,at:new Date().toISOString()});};
